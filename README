@@ -1,0 +1,5 @@
+This project was built in a Unix environment. It compiles and runs on
+Ubuntu 10.04, and I anticipate that it works on similar machines. 
+
+To run, `make project1 && ./project1`
+
