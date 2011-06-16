@@ -10,7 +10,7 @@
 #include <GL/glut.h>
 #include <stdio.h>
 
-#include "libs.hpp"
+#include "libs/misc.hpp"
 
 int NUM_VERTS = 0;
 
@@ -22,8 +22,8 @@ void setup()
 	GLint vCmp = 0;
 	GLint pId = 0;
 	
-	fragTxt = readFile("./source/fshader.fsh");
-	vertTxt = readFile("./source/vshader.vsh");
+	fragTxt = readFile("./source/fshader.fp");
+	vertTxt = readFile("./source/vshader.vp");
 
 	fCmp = makeFragmentShader((char*)fragTxt);
 	vCmp = makeVertexShader((char*)vertTxt);

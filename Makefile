@@ -45,24 +45,28 @@ p1: source/project1.cpp required
 	@echo "[compile] project one"
 	@$(CD) ./build && $(C) $(INC) -c ../source/project1.cpp
 	@echo "[link] linking ALL object files" 
-	$(LN) $(LIB) build/*.o -o project1 
+	$(LN) $(LIB) build/*.o build/libs/*.o -o project1 
 	@chmod +x project1 
 	@echo "\nBuild Success!\n"
 
-# Alias
-project1: p1
-	@$(CD) .
-
 ### ALL LIBS ##########################
 required: \
-	build/libs.o
+	build/libs
 		@$(CD) .
 
 # Normally you don't maintain something like this by hand...
 # ==========================================================
 
-build/libs.o: source/libs.hpp source/libs.cpp
-	@echo "[compile] libs"
-	$(CD) ./build && $(C) $(INC) -c ../source/libs.cpp
+build/libs: \
+	build/libs/math.o \
+	build/libs/misc.o
+		@$(CD) . 
 
+build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
+	@echo "[compile] math lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/math.cpp
+
+build/libs/misc.o: source/libs/misc.hpp source/libs/misc.cpp
+	@echo "[compile] misc lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/misc.cpp
 
