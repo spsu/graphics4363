@@ -1,0 +1,24 @@
+Graphics I 
+==========
+
+This constitutes project work from Graphics I. We're supposed to work
+in C/C++/GLSL, but I've started working in Python to formulate ideas
+faster. 
+
+C/C++ Sources 
+=============
+
+These sources were built in a Unix environment. (It works fine on my
+Ubuntu 11.04 box, and I anticipate that it works on similar machines.)
+
+* Requires [GLTools](https://github.com/HazimGazov/GLTools).
+
+To run, `make project1 && ./project1`, and so forth.
+
+Python Sources
+==============
+
+* Requires _python-opengl_.
+
+To run, `python main.py`, etc.
+

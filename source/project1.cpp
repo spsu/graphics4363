@@ -22,8 +22,8 @@ void setup()
 	GLint vCmp = 0;
 	GLint pId = 0;
 	
-	fragTxt = readFile("./source/fshader.fp");
-	vertTxt = readFile("./source/vshader.vp");
+	fragTxt = readFile("./source/shaders/fshader.fp");
+	vertTxt = readFile("./source/shaders/vshader.vp");
 
 	fCmp = makeFragmentShader((char*)fragTxt);
 	vCmp = makeVertexShader((char*)vertTxt);

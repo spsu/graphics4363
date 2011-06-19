@@ -1,7 +1,7 @@
 *~
 *.[o|a]
 *.sw[p|o]
-
+*.pyc
 *.png
 
 main
