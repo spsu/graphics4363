@@ -1,10 +1,27 @@
 #version 150
 
-in vec4 vPosition;	// This will be referenced in your OpenGL program!!
-in vec4 vColor;		// Coming in from your OpenGL program
-out vec4 color;		// Going to (and defined in) your fragment shader
+in vec4 vPosition;		// This will be referenced in your OpenGL program!!
+//uniform vec4 vColor;	// Coming in from your OpenGL program
+in vec4 vColor; 		// TODO: TEMP
+attribute vec3 vNormal;	// The normal of the vertex
+//varying vec4 color;	// Going to (and defined in) your fragment shader
+out vec4 color; 		// TODO: TEMP
+
+// Remember, uniforms are the same for a vertices.
+uniform mat4 p;			// This is perpsective matrix
+uniform mat4 mv;		// This is the model-view matrix
+uniform vec4 light_pos;	// This is the light position
 
 void main () {
+	// multiply all that stuff together to get a new point!
+	//gl_Position = p*mv*vPosition;	
+	gl_Position = mv*vPosition; // XXX: TEMP
+	//gl_Position = vPosition; // XXX: TEMP
+
+	//vec3 L = normalize (light_pos.xyz);
+	//vec3 N = normalize (vNormal);
+	//color = vColor*max(0.2f, dot(N, L));
+
+	// XXX: TEMP
 	color = vColor;
-	gl_Position = vPosition;
 }

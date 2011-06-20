@@ -12,6 +12,14 @@
 #include <stdio.h>
 #include <math.h>
 
+// Found on OpenGL wiki. Replaces fixed function GLU's Perspective. 
+void glhPerspectivef2(GLfloat *matrix, GLfloat fovyInDegrees, 
+		GLfloat aspectRatio, GLfloat znear, GLfloat zfar);
+
+// Found on OpenGL wiki. Replaces fixed function GLU's Frustrum. 
+void glhFrustumf2(GLfloat *matrix, GLfloat left, GLfloat right, GLfloat bottom, 
+		GLfloat top, GLfloat znear, GLfloat zfar);
+
 void makePerspectiveProjectionMatrix(GLfloat* result, GLfloat fov, 
 		GLfloat aspect, GLfloat _near, GLfloat _far); 
 	

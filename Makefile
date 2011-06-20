@@ -55,7 +55,7 @@ two: source/project2.cpp required
 	@echo "[compile] project two"
 	@$(CD) ./build && $(C) $(INC) -c ../source/project2.cpp
 	@echo "[link] linking ALL object files" 
-	@$(RM) build/project*.o
+	@$(RM) build/project1.o
 	@$(LN) $(LIB) build/*.o build/libs/*.o -o two 
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
