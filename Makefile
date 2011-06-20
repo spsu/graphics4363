@@ -24,7 +24,7 @@ all:
 
 .PHONY: clean
 clean: 
-	$(RM) main test project1
+	$(RM) main test project1 project2
 	$(RM) *.o *.a *.so *.out
 	cd ./build && $(RM) *.o *.so
 	cd ./build && $(RM) */*.o */*.so */*/*.o */*/*.so
@@ -41,7 +41,7 @@ stats:
 # ==============
 
 ### MAIN #############################
-p1: source/project1.cpp required 
+project1: source/project1.cpp required 
 	@echo "[compile] project one"
 	@$(CD) ./build && $(C) $(INC) -c ../source/project1.cpp
 	@echo "[link] linking ALL object files" 
@@ -59,14 +59,18 @@ required: \
 
 build/libs: \
 	build/libs/math.o \
-	build/libs/misc.o
+	build/libs/shaders.o \
+	build/libs/vertex.o
 		@$(CD) . 
 
 build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
 	@echo "[compile] math lib"
 	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/math.cpp
 
-build/libs/misc.o: source/libs/misc.hpp source/libs/misc.cpp
-	@echo "[compile] misc lib"
-	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/misc.cpp
+build/libs/shaders.o: source/libs/shaders.hpp source/libs/shaders.cpp
+	@echo "[compile] shaders lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/shaders.cpp
 
+build/libs/vertex.o: source/libs/vertex.hpp source/libs/vertex.cpp
+	@echo "[compile] vertex lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/vertex.cpp

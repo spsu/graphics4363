@@ -9,15 +9,19 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdio.h>
+#include <string>
 
-#include "libs/misc.hpp"
+using namespace std;
+
+#include "libs/shaders.hpp"
+#include "libs/vertex.hpp"
 
 int NUM_VERTS = 0;
 
 void setup()
 {
-	const char* fragTxt = 0;
-	const char* vertTxt = 0;
+	string fragTxt;
+	string vertTxt;
 	GLint fCmp = 0;
 	GLint vCmp = 0;
 	GLint pId = 0;
@@ -25,8 +29,8 @@ void setup()
 	fragTxt = readFile("./source/shaders/fshader.fp");
 	vertTxt = readFile("./source/shaders/vshader.vp");
 
-	fCmp = makeFragmentShader((char*)fragTxt);
-	vCmp = makeVertexShader((char*)vertTxt);
+	fCmp = makeFragmentShader(fragTxt);
+	vCmp = makeVertexShader(vertTxt);
 
 	printf("Frag Shader Compiled ID: %d\n", fCmp);
 	printf("Vert Shader Compiled ID: %d\n", vCmp);
