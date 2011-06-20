@@ -10,6 +10,8 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -17,7 +19,9 @@ using namespace std;
 #include "libs/shaders.hpp"
 #include "libs/vertex.hpp"
 #include "libs/vao.hpp"
+
 #include "geometry/basic.hpp"
+#include "geometry/sphere.hpp"
 
 // Program ID
 GLint pId = 0;
@@ -89,9 +93,25 @@ void setup()
 		colors[9*i+8] = 0.2f;
 	}
 
-	vao->loadVertices(verts, 12*3, pId);
-	vao->loadColors(colors, 12*3, pId);
-	
+	//vao->loadVertices(verts, 12*3, pId);
+	//vao->loadColors(colors, 12*3, pId);
+
+
+	// XXX: Sphere
+	//vector<GLfloat> sphereV = makeSphere(0.1f, 9);
+	vector<GLfloat> sphereV = makeSphere(0.32f, 9);
+	GLfloat sphereVerts[80000];
+	int numVerts = sphereV.size();// / 4; // X, y, z, w coords
+
+	for(unsigned int i = 0; i < sphereV.size(); i++) {
+		sphereVerts[i] = sphereV.at(i);
+	}
+	cout << "Size " << sphereV.size() << endl;
+
+	VertexArray* vao2 = new VertexArray();
+	vao2->loadVertices(sphereVerts, numVerts*2, pId);
+
+
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
 	mRotX = new GLfloat[16];
@@ -133,7 +153,9 @@ void render(void)
 
 	//translate(mTrans, 0.0f, 0.0f, -0.5f);
 	translate(mTrans, 0.1f, 0.1f, 0.1f);
+	translate(mTrans, 0.0f, 0.0f, 0.0f);
 	rotateY(mRot, counter);
+	//rotateY(mRot, 0.0f);
 
 	matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
 
@@ -143,7 +165,8 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
+	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
+	glDrawArrays(GL_POINTS, 0, NUM_VERTS);
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();

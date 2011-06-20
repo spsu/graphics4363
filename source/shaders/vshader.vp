@@ -21,7 +21,8 @@ void main () {
 	//vec3 L = normalize (light_pos.xyz);
 	//vec3 N = normalize (vNormal);
 	//color = vColor*max(0.2f, dot(N, L));
+	color = vec4(1.0, 1.0, 1.0, 1.0);
 
 	// XXX: TEMP
-	color = vColor;
+	//color = vColor;
 }
