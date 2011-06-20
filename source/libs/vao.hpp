@@ -40,6 +40,8 @@ class VertexArray
 		void loadVertices(GLfloat* vertices, GLuint num, GLint programId);
 		void loadColors(GLfloat* colors, GLuint num, GLint programId);
 
+		void loadNormals(std::vector<GLfloat> normals, GLint programId);
+
 	private: 
 
 		/**
@@ -51,7 +53,8 @@ class VertexArray
 		 * VBO handles
 		 */
 		GLuint vbo_vertex;
-		GLuint vbo_color; // TODO: Normals, etc.
+		GLuint vbo_color;
+		GLuint vbo_normal;
 };
 
 #endif

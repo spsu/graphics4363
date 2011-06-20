@@ -61,17 +61,53 @@ vector<GLfloat> getVertices(objLoader* loader)
 {
 	vector<GLfloat> vertices;
 	obj_vector* vertex;
-	float x;
+	obj_face* face;
 
-	for(int i = 0; i < loader->vertexCount; i++)
+	/*for(int i = 0; i < loader->vertexCount; i++)
 	{
 		vertex = loader->vertexList[i];
 		vertices.push_back((float)vertex->e[0]);
 		vertices.push_back((float)vertex->e[1]);
 		vertices.push_back((float)vertex->e[2]);
+	}*/
+
+	printf("Wavefront .obj Report\n======================\n");
+	printf("Faces:\t%i\n", loader->faceCount);
+	printf("Vertices:\t%i\n", loader->vertexCount);
+
+	for(int i = 0; i < loader->faceCount; i++)
+	{
+		face = loader->faceList[i];
+		for(int j = 0; j < 3; j++) {
+			vertex = loader->vertexList[ face->vertex_index[j] ];
+			vertices.push_back((float)vertex->e[0]);
+			vertices.push_back((float)vertex->e[1]);
+			vertices.push_back((float)vertex->e[2]);
+		}
+	}
+	
+	return vertices;
+}
+
+vector<GLfloat> getNormals(objLoader* loader)
+{
+	vector<GLfloat> normals;
+	obj_vector* normal;
+
+	for(int i = 0; i < loader->normalCount; i++)
+	{
+		normal = loader->normalList[i];
+		normals.push_back((float)normal->e[0]);
+		normals.push_back((float)normal->e[1]);
+		normals.push_back((float)normal->e[2]);
 	}
 
-	return vertices;
+	return normals;
+}
+
+void objReport(objLoader* loader)
+{
+
 }
 
 void setup()
@@ -98,21 +134,22 @@ void setup()
 	glUseProgram(pId);
 
 	// Make sure I'm winding the triangles correctly
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	//GLuint vao = createVertexArray();
 	/*VertexArray* vao = new VertexArray();
 
-	NUM_VERTS = 12 * 3;
 	GLfloat* verts = (GLfloat*)LETTER_B;*/
 
 	vector<GLfloat> vertices;
+	vector<GLfloat> normals;
 
 	objLoader *objData = new objLoader();
-	objData->load("assets/cube.obj");
+	objData->load("assets/torus.obj");
 
 	vertices = getVertices(objData);
+	normals = getNormals(objData);
 	//vertices = vector<GLfloat>(TRIANGLE_A, TRIANGLE_A + sizeof(TRIANGLE_A) / sizeof(GLfloat));
 	//vertices = vector<GLfloat>(LETTER_B, LETTER_B+ sizeof(LETTER_B) / sizeof(float));
 
@@ -136,6 +173,7 @@ void setup()
 
 	VertexArray* vao2 = new VertexArray();
 	vao2->loadVertices(vertices, pId);
+	vao2->loadNormals(normals, pId);
 	
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
@@ -211,8 +249,9 @@ void render(void)
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
 	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS*3);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTS);
-	glDrawArrays(GL_POLYGON, 0, NUM_VERTS);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTS);
+	//glDrawArrays(GL_QUADS, 0, NUM_VERTS);
+	//glDrawArrays(GL_POLYGON, 0, NUM_VERTS);
 	//glDrawArrays(GL_POINTS, 0, NUM_VERTS);
 
 	// Double buffering -- swap current buffer.

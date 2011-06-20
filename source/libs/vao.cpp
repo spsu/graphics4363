@@ -11,6 +11,7 @@ VertexArray::VertexArray() :
 	// TODO: Once I understand better, allocate together into an array. 
 	glGenBuffers(1, &vbo_vertex);
 	glGenBuffers(1, &vbo_color);
+	glGenBuffers(1, &vbo_normal);
 }
 
 VertexArray::~VertexArray()
@@ -83,4 +84,30 @@ void VertexArray::loadColors(GLfloat* colors, GLuint num, GLint programId)
 
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
+
+// TODO: Use a registry to hold programId. 
+void VertexArray::loadNormals(std::vector<GLfloat> normals, GLint programId)
+{
+	GLuint loc(0);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_normal);
+
+	GLfloat data[normals.size()];
+
+	for(unsigned int i = 0; i < normals.size(); i++) {
+		data[i] = normals.at(i);
+	}
+
+	// TODO: GL_STATIC_DRAW alternatives
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), data, 
+			GL_STATIC_DRAW);
+
+	// TODO: ShaderProgramId... Use a registry. 
+	loc = glGetAttribLocation(programId, "vNormal");
+
+	glEnableVertexAttribArray(loc);
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+
 
