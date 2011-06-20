@@ -19,6 +19,31 @@ VertexArray::~VertexArray()
 }
 
 // TODO: Use a registry to hold programId. 
+void VertexArray::loadVertices(std::vector<GLfloat> vertices, GLint programId)
+{
+	GLuint loc(0);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_vertex);
+
+	GLfloat verts2[vertices.size()];
+
+	for(unsigned int i = 0; i < vertices.size(); i++) {
+		verts2[i] = vertices.at(i);
+	}
+
+	// TODO: GL_STATIC_DRAW alternatives
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), verts2, 
+			GL_STATIC_DRAW);
+
+	// TODO: ShaderProgramId... Use a registry. 
+	loc = glGetAttribLocation(programId, "vPosition");
+
+	glEnableVertexAttribArray(loc);
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+
+// TODO: Use a registry to hold programId. 
 void VertexArray::loadVertices(GLfloat* vertices, GLuint num, GLint programId)
 {
 	GLuint loc(0);

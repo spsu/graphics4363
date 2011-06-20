@@ -5,6 +5,18 @@
  * Header-only declaration of some basic geometry.
  */
 
+#include <vector>
+#include <stdio.h>
+
+// TODO: Const
+const GLfloat TRIANGLE_A[] = 
+{
+		0.1f, 0.2f, 0.0f,
+		-0.1f, 0.0f, 0.0f,
+		0.1f, -0.3f, 0.0f
+};
+
+// TODO: Const
 const GLfloat LETTER_B[108] =
 {
 		-0.5f, 0.5f, 0.0f,		// t1
@@ -45,5 +57,17 @@ const GLfloat LETTER_B[108] =
 		0.5f, -0.4f, 0.0f,
 };
 
+// Lazy vertex debug 
+void printVertices(vector<GLfloat> verts)
+{
+	int count = 0;
+	for(unsigned int i = 0; i < verts.size(); i++) {
+		printf("%f, ", verts.at(i));
+		count += 1;
+		if(count %3 == 0) {
+			printf("\n");
+		}
+	}
+};
 
 #endif

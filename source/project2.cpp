@@ -23,11 +23,14 @@ using namespace std;
 #include "geometry/basic.hpp"
 #include "geometry/sphere.hpp"
 
+#include "loader/objLoader.h"
+
 // Program ID
 GLint pId = 0;
 
 // Matrices
 GLfloat* mRot;
+GLfloat* mRotMid;
 GLfloat* mRotX;
 GLfloat* mRotY;
 GLfloat* mRotZ;
@@ -40,7 +43,36 @@ GLfloat* mCam;
 GLfloat counter = 0.0f;
 GLfloat counter2 = 0.0f;
 
+GLfloat xTrans = 0.0f;
+GLfloat yTrans = 0.0f;
+GLfloat zTrans = 0.0f;
+
+bool xRot = false;
+bool yRot = false;
+bool zRot = false;
+
+GLfloat xRotCounter = 0.0f;
+GLfloat yRotCounter = 0.0f;
+GLfloat zRotCounter = 0.0f;
+
 int NUM_VERTS = 0;
+
+vector<GLfloat> getVertices(objLoader* loader)
+{
+	vector<GLfloat> vertices;
+	obj_vector* vertex;
+	float x;
+
+	for(int i = 0; i < loader->vertexCount; i++)
+	{
+		vertex = loader->vertexList[i];
+		vertices.push_back((float)vertex->e[0]);
+		vertices.push_back((float)vertex->e[1]);
+		vertices.push_back((float)vertex->e[2]);
+	}
+
+	return vertices;
+}
 
 void setup()
 {
@@ -66,52 +98,45 @@ void setup()
 	glUseProgram(pId);
 
 	// Make sure I'm winding the triangles correctly
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	//GLuint vao = createVertexArray();
-	VertexArray* vao = new VertexArray();
+	/*VertexArray* vao = new VertexArray();
 
 	NUM_VERTS = 12 * 3;
-	GLfloat* verts = (GLfloat*)LETTER_B;
+	GLfloat* verts = (GLfloat*)LETTER_B;*/
 
-	// UGH, this is terrible. I should have done this programatically.
-  	GLfloat colors[NUM_VERTS*3];
+	vector<GLfloat> vertices;
 
-	// FIXME: No math in loop cond, lazy!
-	for(unsigned int i = 0; i < NUM_VERTS/3; i++) {
-		colors[9*i] = 0.0f;
-		colors[9*i+1] = 0.0f;
-		colors[9*i+2] = 0.7f;
+	objLoader *objData = new objLoader();
+	objData->load("assets/cube.obj");
 
-		colors[9*i+3] = 0.0f;
-		colors[9*i+4] = 0.0f;
-		colors[9*i+5] = 0.0f;
+	vertices = getVertices(objData);
+	//vertices = vector<GLfloat>(TRIANGLE_A, TRIANGLE_A + sizeof(TRIANGLE_A) / sizeof(GLfloat));
+	//vertices = vector<GLfloat>(LETTER_B, LETTER_B+ sizeof(LETTER_B) / sizeof(float));
 
-		colors[9*i+6] = 0.1f;
-		colors[9*i+7] = 0.0f;
-		colors[9*i+8] = 0.2f;
+	NUM_VERTS = vertices.size()/3;
+	cout << "Number of points: " << vertices.size() << endl;
+	printVertices(vertices);
+
+
+	/*GLfloat verts2[900000];
+	int numVerts = vertices.size();
+
+	for(unsigned int i = 0; i < vertices.size(); i++) {
+		verts2[i] = vertices.at(i);
 	}
-
-	//vao->loadVertices(verts, 12*3, pId);
-	//vao->loadColors(colors, 12*3, pId);
-
-
-	// XXX: Sphere
-	//vector<GLfloat> sphereV = makeSphere(0.1f, 9);
-	vector<GLfloat> sphereV = makeSphere(0.32f, 9);
-	GLfloat sphereVerts[80000];
-	int numVerts = sphereV.size();// / 4; // X, y, z, w coords
-
-	for(unsigned int i = 0; i < sphereV.size(); i++) {
-		sphereVerts[i] = sphereV.at(i);
-	}
-	cout << "Size " << sphereV.size() << endl;
+	cout << "Size " << vertices.size() << endl;
+	NUM_VERTS = vertices.size() / 3;
 
 	VertexArray* vao2 = new VertexArray();
-	vao2->loadVertices(sphereVerts, numVerts*2, pId);
+	//vao2->loadVertices(verts2, vertices.size(), pId);
+	vao2->loadVertices(verts2, NUM_VERTS, pId);*/
 
-
+	VertexArray* vao2 = new VertexArray();
+	vao2->loadVertices(vertices, pId);
+	
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
 	mRotX = new GLfloat[16];
@@ -124,11 +149,11 @@ void setup()
 	mCam = new GLfloat[16];
 
 	// fov, aspect, near, far
-	//makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
+	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
 	//makePerspectiveProjectionMatrix(mP, 180.0f, 1.0f, 0.0f, 2100.0f);
 
 	// L, R, B, T, N, F
-	glhFrustumf2(mP, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+	//glhFrustumf2(mP, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
 
 	// FOV(Deg), Aspect, Znear, Zfar
 	//glhPerspectivef2(mP, 120.0f, 1.0f, 1.0f, 100.0f);
@@ -149,13 +174,33 @@ void render(void)
 
 	// XXX: Work here
 	counter += 0.05f;
-	counter2 -= 0.005f;
+	counter2 -= 0.05f;
 
 	//translate(mTrans, 0.0f, 0.0f, -0.5f);
-	translate(mTrans, 0.1f, 0.1f, 0.1f);
-	translate(mTrans, 0.0f, 0.0f, 0.0f);
-	rotateY(mRot, counter);
+	//translate(mTrans, 0.1f, 0.1f, 0.1f);
+	//translate(mTrans, 0.0f, 0.0f, counter2);
+
+	if(xRot) {
+		xRotCounter += 0.05f;
+	}
+	if(yRot) {
+		yRotCounter += 0.05f;
+	}
+	if(zRot) {
+		zRotCounter += 0.05f;
+	}
+
+	rotateX(mRotX, xRotCounter);
+	rotateY(mRotY, yRotCounter);
+	rotateZ(mRotZ, zRotCounter);
+
+	translate(mTrans, xTrans, yTrans, zTrans);
+
+
 	//rotateY(mRot, 0.0f);
+
+	matrixMult4x4(mRot, mRotX, mRotY);
+	//matrixMult4x4(mRot, mRotMid, mRotZ);
 
 	matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
 
@@ -165,14 +210,77 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
-	glDrawArrays(GL_POINTS, 0, NUM_VERTS);
+	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS*3);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTS);
+	glDrawArrays(GL_POLYGON, 0, NUM_VERTS);
+	//glDrawArrays(GL_POINTS, 0, NUM_VERTS);
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
 
+void keypress(unsigned char key, int x, int y)
+{
+	switch (key) {
+		case 'q':
+			exit(1);
+			break;
+
+		// Translate
+		case 'w': 
+			yTrans += 0.01f;
+			break;
+		case 's':
+			yTrans -= 0.01f;
+			break;
+		case 'r': 
+			yTrans += 5.0f;
+			break;
+		case 't':
+			yTrans -= 5.0f;
+			break;
+
+		case 'a':
+			xTrans -= 0.01f;
+			break;
+		case 'd':
+			xTrans += 0.01f;
+			break;
+		case 'f':
+			xTrans -= 5.0f;
+			break;
+		case 'g':
+			xTrans += 5.0f;
+			break;
+
+		case 'z':
+			zTrans -= 0.05f;
+			break;
+		case 'x':
+			zTrans += 0.05f;
+			break;
+		case 'c':
+			zTrans -= 5.0f;
+			break;
+		case 'v':
+			zTrans += 5.0f;
+			break;
+
+
+		// Rotate
+		case 'y':
+			xRot = !xRot;
+			break;
+		case 'u':
+			yRot = !yRot; 
+			break;
+		case 'i':
+			zRot = !zRot;
+			break;
+	}
+	printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
+}
 
 int main(int argc, char** argv)
 {
@@ -192,6 +300,7 @@ int main(int argc, char** argv)
 	// Callbacks etc.
 	glutReshapeFunc(resizeCb);
 	glutDisplayFunc(render);
+	glutKeyboardFunc(keypress);
 
 	setup();
 	glutMainLoop();

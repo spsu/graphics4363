@@ -17,6 +17,7 @@
 
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <vector>
 
 class VertexArray
 {
@@ -35,6 +36,7 @@ class VertexArray
 		/**
 		 * Load data.
 		 */
+		void loadVertices(std::vector<GLfloat> vertices, GLint programId);
 		void loadVertices(GLfloat* vertices, GLuint num, GLint programId);
 		void loadColors(GLfloat* colors, GLuint num, GLint programId);
 

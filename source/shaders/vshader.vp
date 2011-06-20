@@ -15,7 +15,8 @@ uniform vec4 light_pos;	// This is the light position
 void main () {
 	// multiply all that stuff together to get a new point!
 	//gl_Position = p*mv*vPosition;	
-	gl_Position = mv*vPosition; // XXX: TEMP
+	gl_Position = p*mv*vPosition; // XXX: TEMP
+	//gl_Position = mv*p*vPosition; // XXX: TEMP
 	//gl_Position = vPosition; // XXX: TEMP
 
 	//vec3 L = normalize (light_pos.xyz);

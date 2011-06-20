@@ -56,7 +56,8 @@ two: source/project2.cpp required
 	@$(CD) ./build && $(C) $(INC) -c ../source/project2.cpp
 	@echo "[link] linking ALL object files" 
 	@$(RM) build/project1.o
-	@$(LN) $(LIB) build/*.o build/libs/*.o build/geometry/*.o -o two 
+	@$(LN) $(LIB) build/*.o build/libs/*.o build/geometry/*.o \
+		build/loader/*.o -o two 
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
 
@@ -74,7 +75,8 @@ build/libs: \
 	build/libs/shaders.o \
 	build/libs/vertex.o \
 	build/libs/vao.o \
-	build/geometry/sphere.o
+	build/geometry/sphere.o \
+	build/loader.o
 		@$(CD) . 
 
 build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
@@ -97,4 +99,7 @@ build/geometry/sphere.o: source/geometry/sphere.hpp source/geometry/sphere.cpp
 	@echo "[compile] sphere lib"
 	@$(CD) ./build/geometry && $(C) $(INC) -c ../../source/geometry/sphere.cpp
 
+build/loader.o: source/loader/*.h source/loader/*.cpp
+	@echo "[compile] loader"
+	@$(CD) ./build/loader && $(C) $(INC) -c ../../source/loader/*.cpp
 
