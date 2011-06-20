@@ -24,7 +24,7 @@ all:
 
 .PHONY: clean
 clean: 
-	$(RM) main test project1 project2
+	$(RM) main test project1 project2 two
 	$(RM) *.o *.a *.so *.out
 	cd ./build && $(RM) *.o *.so
 	cd ./build && $(RM) */*.o */*.so */*/*.o */*/*.so
@@ -40,14 +40,26 @@ stats:
 # Build Targets 
 # ==============
 
-### MAIN #############################
+### PROJECT ONE #############################
 project1: source/project1.cpp required 
 	@echo "[compile] project one"
 	@$(CD) ./build && $(C) $(INC) -c ../source/project1.cpp
 	@echo "[link] linking ALL object files" 
-	$(LN) $(LIB) build/*.o build/libs/*.o -o project1 
+	@$(RM) build/project*.o
+	@$(LN) $(LIB) build/*.o build/libs/*.o -o project1 
 	@chmod +x project1 
 	@echo "\nBuild Success!\n"
+
+### PROJECT TWO ######################
+two: source/project2.cpp required 
+	@echo "[compile] project two"
+	@$(CD) ./build && $(C) $(INC) -c ../source/project2.cpp
+	@echo "[link] linking ALL object files" 
+	@$(RM) build/project*.o
+	@$(LN) $(LIB) build/*.o build/libs/*.o -o two 
+	@chmod +x two 
+	@echo "\nBuild Success!\n"
+
 
 ### ALL LIBS ##########################
 required: \
@@ -60,7 +72,8 @@ required: \
 build/libs: \
 	build/libs/math.o \
 	build/libs/shaders.o \
-	build/libs/vertex.o
+	build/libs/vertex.o \
+	build/libs/vao.o
 		@$(CD) . 
 
 build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
@@ -74,3 +87,9 @@ build/libs/shaders.o: source/libs/shaders.hpp source/libs/shaders.cpp
 build/libs/vertex.o: source/libs/vertex.hpp source/libs/vertex.cpp
 	@echo "[compile] vertex lib"
 	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/vertex.cpp
+
+build/libs/vao.o: source/libs/vao.hpp source/libs/vao.cpp
+	@echo "[compile] vao lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/vao.cpp
+
+

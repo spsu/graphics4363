@@ -15,6 +15,8 @@ using namespace std;
 
 #include "libs/shaders.hpp"
 #include "libs/vertex.hpp"
+#include "libs/vao.hpp"
+#include "geometry/basic.hpp"
 
 int NUM_VERTS = 0;
 
@@ -46,75 +48,14 @@ void setup()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	GLuint vao = createVertexArray();
+	//GLuint vao = createVertexArray();
+	VertexArray* vao = new VertexArray();
 
 	NUM_VERTS = 12 * 3;
+	GLfloat* verts = (GLfloat*)LETTER_B;
 
 	// UGH, this is terrible. I should have done this programatically.
-  	GLfloat verts[] = {
-		// t1
-		-0.5f, 0.5f, 0.0f,
-		-0.5f, -0.6f, 0.0f,
-		-0.3f, -0.6f, 0.0f,
-
-		// t2
-		-0.3f, 0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		-0.3f, -0.6f, 0.0f,
-
-		// t3
-		0.3f, 0.2f, 0.0f,
-		-0.3f, 0.5f, 0.0f,
-		-0.3f, 0.2f, 0.0f,
-
-		// t4
-		-0.3f, 0.5f, 0.0f,
-		0.3f, 0.2f, 0.0f,
-		0.3f, 0.5f, 0.0f,
-
-		// t5
-		0.1f, 0.2f, 0.0f,
-		0.1f, 0.0f, 0.0f,
-		0.3f, 0.0f, 0.0f,
-
-		// t6
-		0.1f, 0.2f, 0.0f,
-		0.3f, 0.0f, 0.0f,
-		0.3f, 0.2f, 0.0f,
-
-		// t7
-		-0.3f, 0.0f, 0.0f,
-		-0.3f, -0.2f, 0.0f,
-		0.5f, -0.2f, 0.0f,
-
-		// t8
-		-0.3f, 0.0f, 0.0f,
-		0.5f, -0.2f, 0.0f,
-		0.5f, 0.0f, 0.0f,
-
-		// t9
-		0.3f, -0.2f, 0.0f,
-		0.3f, -0.4f, 0.0f,
-		0.5, -0.4f, 0.0f,
-
-		// t10
-		0.3f, -0.2f, 0.0f,
-		0.5f, -0.4f, 0.0f,
-		0.5f, -0.2f, 0.0f,
-
-		// t11
-		-0.3f, -0.4f, 0.0f,
-		-0.3f, -0.6f, 0.0f,
-		0.5f, -0.6f, 0.0f,
-
-		// t12
-		-0.3f, -0.4f, 0.0f,
-		0.5f, -0.6f, 0.0f,
-		0.5f, -0.4f, 0.0f,
-
-	};
-
-	GLfloat colors[NUM_VERTS*3];
+  	GLfloat colors[NUM_VERTS*3];
 
 	// FIXME: No math in loop cond, lazy!
 	for(unsigned int i = 0; i < NUM_VERTS/3; i++) {
@@ -131,11 +72,10 @@ void setup()
 		colors[9*i+8] = 0.2f;
 	}
 
-
-	loadVertexPositions(pId, vao, verts, NUM_VERTS);
-	loadColors(pId, vao, colors, NUM_VERTS);
+	vao->loadVertices(verts, 12*3, pId);
+	vao->loadColors(colors, 12*3, pId);
 	
-	glClearColor (0.10f, 0.10f, 0.10f, 1.0f);
+	glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
 }
 
 
