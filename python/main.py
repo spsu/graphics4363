@@ -5,15 +5,18 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 from shaders import * 
+from vao import *
 
 # Disable error checking for speed increase.
 # OpenGL.ERROR_CHECKING = False
 
 import sys
 
-#def resizeCb(w, h):
-#	"""Window reshape callback"""
-#	glViewport(0, 0, w, h)
+vertices = [
+	0.8,  0.8,  0.0,  1.0,
+	0.8, -0.8,  0.0,  1.0,
+	-0.8, -0.8,  0.0,  1.0,
+]
 
 def setup():
 	"""
@@ -42,6 +45,31 @@ def setup():
 	pid = compileShaderProg(vshader, fshader)
 	print "Compiled Shader Program ID: %d" % pid
 
+	glUseProgram(pid)
+
+	# Backface culling.
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	vao = createVertexArray()
+
+	loadVertexPositions(pid, vao, vertices)
+	#loadColors(pId, vao, colors, NUM_VERTS)
+
+	glClearColor(0.10, 0.10, 0.10, 1.0)
+
+def render():
+	"""
+	Render Routine.
+	"""
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+	# glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS)
+	# glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTS)
+
+	# Double buffer -- swap current
+	glutSwapBuffers()
+
 
 def main():
 	glutInit(sys.argv)
@@ -53,7 +81,7 @@ def main():
 
 	glutReshapeFunc(lambda w, h: glViewport(0, 0, w, h))
 	#glutReshapeFunc(resizeCb)
-	#glutDisplayFunc()
+	glutDisplayFunc(render)
 	#glutKeyboardFunc()
 
 	setup()

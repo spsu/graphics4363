@@ -1,10 +1,33 @@
+# Brandon Thomas Suit
+# echelon at gmail dot com
+# http://possibilistic.org
+# http://github.com/echelon
+
+"""
+Shader Support Module.
+Contains functions for compiling and linking shader programs.
+"""
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
-"""
-Shader Support Module
-"""
+def compileShaderProg(vsh, fsh):
+	"""
+	Utilize the simple compilation functions made for us by the
+	PyOpenGL module maintainers.
+	"""
+	from OpenGL.GL.shaders import compileShader
+	from OpenGL.GL.shaders import compileProgram
+
+	vertShader = compileShader(vsh, GL_VERTEX_SHADER)
+	fragShader = compileShader(fsh, GL_FRAGMENT_SHADER)
+
+	return compileProgram(vertShader, fragShader)
+
+# ============================================
+# Code below mimics Dr. Chastine's libraries. 
+#
 
 def makeVertexShader(source):
 	return makeShader(source, GL_VERTEX_SHADER)
@@ -14,8 +37,9 @@ def makeFragmentShader(source):
 
 def makeShader(source, stype):
 	"""
-	Make a shader object.
-	Compiles from the source supplied. 
+	Compile a shader object from supplied source.
+	Returns the shader object id.
+	Mimics the C++ code by Dr. Jeff Chastine.
 	"""
 	# Create empty shader object
 	shaderId = glCreateShader(stype)
@@ -31,9 +55,12 @@ def makeShader(source, stype):
 
 	return shaderId
 
+# XXX/FIXME: This is not working! Esoteric bug:
 def linkShaders(*args):
 	"""
-	Create shader program, then link shaders together.
+	Link shader objects together, creating the shader program.
+	Returns the shader program ID.
+	Mimics the C++ code by Dr. Jeff Chastine.
 	"""
 	# Create an empty program
 	programId = glCreateProgram()
@@ -54,15 +81,3 @@ def linkShaders(*args):
 
 	return programId
 
-def compileShaderProg(vsh, fsh):
-	"""
-	Utilize simple compilation functions made for us by
-	the PyOpenGL module maintainers.
-	"""
-	from OpenGL.GL.shaders import compileShader
-	from OpenGL.GL.shaders import compileProgram
-
-	vertShader = compileShader(vsh, GL_VERTEX_SHADER)
-	fragShader = compileShader(fsh, GL_FRAGMENT_SHADER)
-
-	return compileProgram(vertShader, fragShader)
