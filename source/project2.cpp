@@ -114,6 +114,21 @@ void setup()
 	vao1 = new VertexArray();
 	vao1->loadVertices(sphereLoader->getVertices());
 	vao1->loadNormals(sphereLoader->getNormals());
+
+	// XXX: Create VAO. 
+	vao2 = new VertexArray();
+	vao2->loadVertices(torusLoader->getVertices());
+	vao2->loadNormals(torusLoader->getNormals());
+
+	// XXX: Create VAO. 
+	vao3 = new VertexArray();
+	vao3->loadVertices(cubeLoader->getVertices());
+	vao3->loadNormals(cubeLoader->getNormals());
+
+	// XXX: Create VAO. 
+	vao4 = new VertexArray();
+	vao4->loadVertices(sphereLoader->getVertices());
+	vao4->loadNormals(sphereLoader->getNormals());
 }
 
 
@@ -186,6 +201,8 @@ void render(void)
 	if(xRot) {
 		vao1->draw();
 	}
+	vao2->draw();
+	vao3->draw();
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();
