@@ -1,48 +1,40 @@
-#include "shaders.hpp"
+#include "compiler.hpp"
+#include "registry.hpp"
+#include "../libs/file.hpp"
 #include <stdio.h>
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 
 // Forward decs
 GLint makeShader(string source, GLenum sType);
 
-string readFile(string filename)
+GLint loadAndCompile(string vShaderFile, string fShaderFile)
 {
-	/*FILE* fp = 0;
-	fp = fopen(filename, "r");
-	if(!fp) {
-		fprintf(stderr, "There was a problem opening: %s\n", filename);
-		return "";
-	}
+	GLint pId(0);
+	string fragTxt;
+	string vertTxt;
+	GLint fCmpId(0);
+	GLint vCmpId(0);
+	
+	fragTxt = readFile("./source/shaders/fshader.fp");
+	vertTxt = readFile("./source/shaders/vshader.vp");
 
-	// Go to the beginning and get the length of the file
-	fseek (fp, 0, SEEK_END);
-	long file_length = ftell(fp);
+	fCmpId = makeFragmentShader(fragTxt);
+	vCmpId = makeVertexShader(vertTxt);
 
-	// Go back to the beginning and read the contents
-	fseek (fp, 0, SEEK_SET);
-	char* contents = new char[file_length+1];
-	for (int i = 0; i < file_length+1; i++) {
-		contents[i] = 0;
-	}
-	fread (contents, 1, file_length, fp);
-	contents[file_length] = '\0';
-	fclose(fp);
+	printf("Frag Shader Compiled ID: %d\n", fCmpId);
+	printf("Vert Shader Compiled ID: %d\n", vCmpId);
 
-	return contents;*/
+	pId = makeShaderProgram(vCmpId, fCmpId);
+	Registry::setProgramId(pId);
 
-	//ifstream fs;
+	printf("Linked program ID: %d\n", pId);
 
-	//fs.open(filename, ifstream::in);
-
-	ifstream fs(filename.c_str());
-
-	return string(istreambuf_iterator<char>(fs), istreambuf_iterator<char>());
-
-	//fs.close();
+	return pId;
 }
+
+
+
 
 bool compiledStatus(GLint shaderID)
 {

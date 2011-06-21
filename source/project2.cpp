@@ -15,15 +15,19 @@
 
 using namespace std;
 
+#include "libs/file.hpp"
 #include "libs/math.hpp"
-#include "libs/shaders.hpp"
 #include "libs/vertex.hpp"
 #include "libs/vao.hpp"
-
+#include "shaderlib/compiler.hpp"
+#include "shaderlib/registry.hpp"
 #include "geometry/basic.hpp"
 #include "geometry/sphere.hpp"
 
 #include "loader/objLoader.h"
+
+const string FRAGMENT_SHADER = "./source/shaders/fshader.fp";
+const string VERTEX_SHADER = "./source/shaders/vshader.vp";
 
 // Program ID
 GLint pId = 0;
@@ -112,23 +116,7 @@ vector<GLfloat> getNormals(objLoader* loader)
 
 void setup()
 {
-	string fragTxt;
-	string vertTxt;
-	GLint fCmp = 0;
-	GLint vCmp = 0;
-	
-	fragTxt = readFile("./source/shaders/fshader.fp");
-	vertTxt = readFile("./source/shaders/vshader.vp");
-
-	fCmp = makeFragmentShader(fragTxt);
-	vCmp = makeVertexShader(vertTxt);
-
-	printf("Frag Shader Compiled ID: %d\n", fCmp);
-	printf("Vert Shader Compiled ID: %d\n", vCmp);
-
-	pId = makeShaderProgram(vCmp, fCmp);
-
-	printf("Linked program ID: %d\n", pId);
+	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
 	// Use shader
 	glUseProgram(pId);
@@ -152,8 +140,8 @@ void setup()
 	NUM_VERTS = vertices.size()/3;
 
 	VertexArray* vao2 = new VertexArray();
-	vao2->loadVertices(vertices, pId);
-	vao2->loadNormals(normals, pId);
+	vao2->loadVertices(vertices);
+	vao2->loadNormals(normals);
 	
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
@@ -173,7 +161,8 @@ void setup()
 	// mat, fov, aspect, near, far
 	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
 
-	glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
+	//glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
+	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 }
 
 

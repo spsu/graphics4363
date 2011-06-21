@@ -19,6 +19,13 @@
 #include <GL/glut.h>
 #include <vector>
 
+/**
+ * TODO: Subclass with a Model class that automatically imports vertices, 
+ * normals, etc.
+ *
+ * TODO: Figure out how to clone, turn "on" and "off", how to translate, rotate,
+ * etc only a single object. 
+ */
 class VertexArray
 {
 	public:
@@ -36,11 +43,11 @@ class VertexArray
 		/**
 		 * Load data.
 		 */
-		void loadVertices(std::vector<GLfloat> vertices, GLint programId);
-		void loadVertices(GLfloat* vertices, GLuint num, GLint programId);
-		void loadColors(GLfloat* colors, GLuint num, GLint programId);
+		void loadVertices(std::vector<GLfloat> vertices);
+		void loadVertices(GLfloat* vertices, GLuint num);
+		void loadColors(GLfloat* colors, GLuint num);
 
-		void loadNormals(std::vector<GLfloat> normals, GLint programId);
+		void loadNormals(std::vector<GLfloat> normals);
 
 	private: 
 

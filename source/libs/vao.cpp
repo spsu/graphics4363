@@ -1,4 +1,5 @@
 #include "vao.hpp"
+#include "../shaderlib/registry.hpp"
 
 VertexArray::VertexArray() :
 	vao(0),
@@ -19,8 +20,7 @@ VertexArray::~VertexArray()
 	// TODO
 }
 
-// TODO: Use a registry to hold programId. 
-void VertexArray::loadVertices(std::vector<GLfloat> vertices, GLint programId)
+void VertexArray::loadVertices(std::vector<GLfloat> vertices)
 {
 	GLuint loc(0);
 
@@ -37,15 +37,13 @@ void VertexArray::loadVertices(std::vector<GLfloat> vertices, GLint programId)
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), verts2, 
 			GL_STATIC_DRAW);
 
-	// TODO: ShaderProgramId... Use a registry. 
-	loc = glGetAttribLocation(programId, "vPosition");
+	loc = glGetAttribLocation(Registry::getProgramId(), "vPosition");
 
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-// TODO: Use a registry to hold programId. 
-void VertexArray::loadVertices(GLfloat* vertices, GLuint num, GLint programId)
+void VertexArray::loadVertices(GLfloat* vertices, GLuint num)
 {
 	GLuint loc(0);
 
@@ -57,15 +55,13 @@ void VertexArray::loadVertices(GLfloat* vertices, GLuint num, GLint programId)
 	glBufferData(GL_ARRAY_BUFFER, num * 3 * sizeof(GLfloat), vertices, 
 			GL_STATIC_DRAW);
 
-	// TODO: ShaderProgramId... Use a registry. 
-	loc = glGetAttribLocation(programId, "vPosition");
+	loc = glGetAttribLocation(Registry::getProgramId(), "vPosition");
 
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-// TODO: Use a registry to hold programId.
-void VertexArray::loadColors(GLfloat* colors, GLuint num, GLint programId)
+void VertexArray::loadColors(GLfloat* colors, GLuint num)
 {
 	GLuint loc(0);
 
@@ -77,8 +73,7 @@ void VertexArray::loadColors(GLfloat* colors, GLuint num, GLint programId)
 	glBufferData(GL_ARRAY_BUFFER, num * 3 * sizeof(GLfloat), colors, 
 			GL_STATIC_DRAW);
 
-	// TODO: ShaderProgramId... Use a registry. 
-	loc = glGetAttribLocation(programId, "vColor");
+	loc = glGetAttribLocation(Registry::getProgramId(), "vColor");
 
 	glEnableVertexAttribArray(loc);
 
@@ -86,8 +81,7 @@ void VertexArray::loadColors(GLfloat* colors, GLuint num, GLint programId)
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-// TODO: Use a registry to hold programId. 
-void VertexArray::loadNormals(std::vector<GLfloat> normals, GLint programId)
+void VertexArray::loadNormals(std::vector<GLfloat> normals)
 {
 	GLuint loc(0);
 
@@ -104,11 +98,11 @@ void VertexArray::loadNormals(std::vector<GLfloat> normals, GLint programId)
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), data, 
 			GL_STATIC_DRAW);
 
-	// TODO: ShaderProgramId... Use a registry. 
-	loc = glGetAttribLocation(programId, "vNormal");
+	loc = glGetAttribLocation(Registry::getProgramId(), "vNormal");
 
 	glEnableVertexAttribArray(loc);
 
+	// Associate vertices with currently bound buffer.
 	// index, numComponents, type, doNormalization, stride, first item ptr
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }

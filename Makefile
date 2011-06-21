@@ -56,7 +56,8 @@ two: source/project2.cpp required
 	@$(CD) ./build && $(C) $(INC) -c ../source/project2.cpp
 	@echo "[link] linking ALL object files" 
 	@$(RM) build/project1.o
-	@$(LN) $(LIB) build/*.o build/libs/*.o build/geometry/*.o \
+	@$(LN) $(LIB) build/*.o build/libs/*.o build/shaderlib/*.o \
+		build/geometry/*.o \
 		build/loader/*.o -o two 
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
@@ -72,20 +73,22 @@ required: \
 
 build/libs: \
 	build/libs/math.o \
-	build/libs/shaders.o \
+	build/libs/file.o \
 	build/libs/vertex.o \
 	build/libs/vao.o \
+	build/shaderlib/compiler.o \
+	build/shaderlib/registry.o \
 	build/geometry/sphere.o \
 	build/loader.o
 		@$(CD) . 
 
+build/libs/file.o: source/libs/file.hpp source/libs/file.cpp
+	@echo "[compile] file lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/file.cpp
+
 build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
 	@echo "[compile] math lib"
 	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/math.cpp
-
-build/libs/shaders.o: source/libs/shaders.hpp source/libs/shaders.cpp
-	@echo "[compile] shaders lib"
-	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/shaders.cpp
 
 build/libs/vertex.o: source/libs/vertex.hpp source/libs/vertex.cpp
 	@echo "[compile] vertex lib"
@@ -95,10 +98,20 @@ build/libs/vao.o: source/libs/vao.hpp source/libs/vao.cpp
 	@echo "[compile] vao lib"
 	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/vao.cpp
 
+build/shaderlib/compiler.o: source/shaderlib/compiler.hpp source/shaderlib/compiler.cpp
+	@echo "[compile] shader compiler"
+	@$(CD) ./build/shaderlib && $(C) $(INC) -c ../../source/shaderlib/compiler.cpp
+
+build/shaderlib/registry.o: source/shaderlib/registry.hpp source/shaderlib/registry.cpp
+	@echo "[compile] shader registry"
+	@$(CD) ./build/shaderlib && $(C) $(INC) -c ../../source/shaderlib/registry.cpp
+
+
 build/geometry/sphere.o: source/geometry/sphere.hpp source/geometry/sphere.cpp
 	@echo "[compile] sphere lib"
 	@$(CD) ./build/geometry && $(C) $(INC) -c ../../source/geometry/sphere.cpp
 
+# XXX: Third party obj loader library. 
 build/loader.o: source/loader/*.h source/loader/*.cpp
 	@echo "[compile] loader"
 	@$(CD) ./build/loader && $(C) $(INC) -c ../../source/loader/*.cpp
