@@ -6,32 +6,28 @@ in vec3 vNormal;		// XXX: I think this is correct.
 //uniform vec4 vColor;	// Coming in from your OpenGL program
 //in vec4 vColor; 		// TODO: TEMP
 //attribute vec3 vNormal;	// The normal of the vertex
-varying vec4 color;	// Going to (and defined in) your fragment shader
+
+varying vec4 color;		// Going to (and defined in) your fragment shader
 //out vec4 color; 		// TODO: TEMP
 
 // Remember, uniforms are the same for a vertices.
 uniform mat4 p;			// This is perpsective matrix
 uniform mat4 mv;		// This is the model-view matrix
-//uniform vec4 light_pos;	// This is the light position
 
+// Lighting. It works!
 uniform vec3 lightPos;
 uniform vec4 diffuseColor;
 
-void main () {
-	// multiply all that stuff together to get a new point!
-	//gl_Position = p*mv*vPosition;	
-	gl_Position = p*mv*vPosition; // XXX: TEMP
-	//gl_Position = mv*p*vPosition; // XXX: TEMP
-	//gl_Position = vPosition; // XXX: TEMP
+void main()
+{
+	// Positioning
+	gl_Position = p * mv * vPosition;
 
-	//vec3 L = normalize (light_pos.xyz);
-	vec3 L = normalize (lightPos.xyz);
-	vec3 N = normalize (vNormal);
-	color = diffuseColor*max(0.2f, dot(N, L));
-	//color = diffuseColor*vNormal;
-	//color = vec4(1.0, 1.0, 1.0, 1.0);
-	//color = diffuseColor;
+	// Lighting calculations
+	vec3 L = normalize(lightPos.xyz);
+	vec3 N = normalize(vNormal);
+	color = diffuseColor * max(0.2f, dot(N, L));
 
-	// XXX: TEMP
 	//color = vColor;
+	//gl_Position = vPosition;
 }

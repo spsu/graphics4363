@@ -42,6 +42,8 @@ GLfloat* mCam;
 
 GLfloat counter = 0.0f;
 GLfloat counter2 = 0.0f;
+GLfloat counter3 = 0.0f;
+bool directionRight = true;
 
 GLfloat xTrans = 0.0f;
 GLfloat yTrans = 0.0f;
@@ -167,7 +169,7 @@ void setup()
 	vector<GLfloat> normals;
 
 	objLoader *objData = new objLoader();
-	objData->load("assets/cube.obj");
+	objData->load("assets/torus.obj");
 
 	vertices = getVertices(objData);
 	normals = getNormals(objData);
@@ -238,9 +240,24 @@ void render(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
+	// XXX: Moving lighting. 
+	if(counter3 > 300.0f) {
+		directionRight = false;	
+	}
+	else if(counter3 < -300.0f) {
+		directionRight = true;
+	}
+	if(directionRight) {
+		counter3 += 4.0f;
+	}
+	else {
+		counter3 -= 4.0f;
+	}
+
 	// XXX: Lighting
-	GLfloat lightPos[] = { counter, 100.0f, 100.0f };
+	GLfloat lightPos[] = { counter3, counter3, 100.0f };
 	GLfloat diffuseColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
 
 	glUniform3fv(lightLoc, 1, lightPos);
 	glUniform4fv(dcLoc, 1, diffuseColor);
