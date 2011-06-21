@@ -68,14 +68,6 @@ vector<GLfloat> getVertices(objLoader* loader)
 	obj_vector* vertex;
 	obj_face* face;
 
-	/*for(int i = 0; i < loader->vertexCount; i++)
-	{
-		vertex = loader->vertexList[i];
-		vertices.push_back((float)vertex->e[0]);
-		vertices.push_back((float)vertex->e[1]);
-		vertices.push_back((float)vertex->e[2]);
-	}*/
-
 	printf("Wavefront .obj Report\n======================\n");
 	printf("Faces:\t%i\n", loader->faceCount);
 	printf("Vertices:\t%i\n", loader->vertexCount);
@@ -83,7 +75,7 @@ vector<GLfloat> getVertices(objLoader* loader)
 	for(int i = 0; i < loader->faceCount; i++)
 	{
 		face = loader->faceList[i];
-		for(int j = 0; j < 3; j++) {
+		for(int j = 0; j < face->vertex_count; j++) {
 			vertex = loader->vertexList[ face->vertex_index[j] ];
 			vertices.push_back((float)vertex->e[0]);
 			vertices.push_back((float)vertex->e[1]);
@@ -100,16 +92,6 @@ vector<GLfloat> getNormals(objLoader* loader)
 	obj_vector* normal;
 	obj_face* face;
 
-	/*for(int i = 0; i < loader->normalCount; i++)
-	{
-		normal = loader->normalList[i];
-		normals.push_back((float)normal->e[0]);
-		normals.push_back((float)normal->e[1]);
-		normals.push_back((float)normal->e[2]);
-	}
-
-	return normals;*/
-
 	printf("Wavefront .obj Report\n======================\n");
 	printf("Faces:\t%i\n", loader->faceCount);
 	printf("Normals:\t%i\n", loader->normalCount);
@@ -117,7 +99,7 @@ vector<GLfloat> getNormals(objLoader* loader)
 	for(int i = 0; i < loader->faceCount; i++)
 	{
 		face = loader->faceList[i];
-		for(int j = 0; j < 3; j++) {
+		for(int j = 0; j < face->vertex_count; j++) {
 			normal = loader->normalList[ face->normal_index[j] ];
 			normals.push_back((float)normal->e[0]);
 			normals.push_back((float)normal->e[1]);
@@ -126,11 +108,6 @@ vector<GLfloat> getNormals(objLoader* loader)
 	}
 	
 	return normals;
-}
-
-void objReport(objLoader* loader)
-{
-
 }
 
 void setup()
@@ -156,46 +133,23 @@ void setup()
 	// Use shader
 	glUseProgram(pId);
 
-	// Make sure I'm winding the triangles correctly
+	// Backface culling. 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	//GLuint vao = createVertexArray();
-	/*VertexArray* vao = new VertexArray();
-
-	GLfloat* verts = (GLfloat*)LETTER_B;*/
+	// Depth testing.
+	glEnable(GL_DEPTH_TEST);
 
 	vector<GLfloat> vertices;
 	vector<GLfloat> normals;
 
 	objLoader *objData = new objLoader();
-	objData->load("assets/torus.obj");
+	objData->load("assets/sphere.obj");
 
 	vertices = getVertices(objData);
 	normals = getNormals(objData);
 
-	//vertices = vector<GLfloat>(TRIANGLE_A, TRIANGLE_A + sizeof(TRIANGLE_A) / sizeof(GLfloat));
-	//vertices = vector<GLfloat>(LETTER_B, LETTER_B+ sizeof(LETTER_B) / sizeof(float));
-
 	NUM_VERTS = vertices.size()/3;
-	cout << "Number of points: " << vertices.size() << endl;
-	printVertices(vertices);
-	cout << "Normals: " << endl;
-	printVertices(normals);
-
-
-	/*GLfloat verts2[900000];
-	int numVerts = vertices.size();
-
-	for(unsigned int i = 0; i < vertices.size(); i++) {
-		verts2[i] = vertices.at(i);
-	}
-	cout << "Size " << vertices.size() << endl;
-	NUM_VERTS = vertices.size() / 3;
-
-	VertexArray* vao2 = new VertexArray();
-	//vao2->loadVertices(verts2, vertices.size(), pId);
-	vao2->loadVertices(verts2, NUM_VERTS, pId);*/
 
 	VertexArray* vao2 = new VertexArray();
 	vao2->loadVertices(vertices, pId);
@@ -216,15 +170,8 @@ void setup()
 	lightLoc = glGetUniformLocation(pId, "lightPos");
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
-	// fov, aspect, near, far
+	// mat, fov, aspect, near, far
 	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
-	//makePerspectiveProjectionMatrix(mP, 180.0f, 1.0f, 0.0f, 2100.0f);
-
-	// L, R, B, T, N, F
-	//glhFrustumf2(mP, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-
-	// FOV(Deg), Aspect, Znear, Zfar
-	//glhPerspectivef2(mP, 120.0f, 1.0f, 1.0f, 100.0f);
 
 	glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
 }
@@ -235,10 +182,9 @@ void resizeCb(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
-
 void render(void) 
 {
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	// XXX: Moving lighting. 
 	if(counter3 > 300.0f) {
@@ -258,20 +204,12 @@ void render(void)
 	GLfloat lightPos[] = { counter3, counter3, 100.0f };
 	GLfloat diffuseColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-
 	glUniform3fv(lightLoc, 1, lightPos);
 	glUniform4fv(dcLoc, 1, diffuseColor);
 
-	//glUniformMatrix3fv(lightLoc, 1, GL_FALSE, pId);
-	//glUniformMatrix4fv(dcLoc, 1, GL_FALSE, pId);
-
-	// XXX: Work here
+	// XXX: Rotation and transformation
 	counter += 0.05f;
 	counter2 -= 0.05f;
-
-	//translate(mTrans, 0.0f, 0.0f, -0.5f);
-	//translate(mTrans, 0.1f, 0.1f, 0.1f);
-	//translate(mTrans, 0.0f, 0.0f, counter2);
 
 	if(xRot) {
 		xRotCounter += 0.05f;
@@ -289,7 +227,6 @@ void render(void)
 
 	translate(mTrans, xTrans, yTrans, zTrans);
 
-
 	//rotateY(mRot, 0.0f);
 
 	matrixMult4x4(mRot, mRotX, mRotY);
@@ -303,11 +240,8 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS*3);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTS);
-	//glDrawArrays(GL_QUADS, 0, NUM_VERTS);
-	//glDrawArrays(GL_POLYGON, 0, NUM_VERTS);
-	//glDrawArrays(GL_POINTS, 0, NUM_VERTS);
+	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
+	glDrawArrays(GL_QUADS, 0, NUM_VERTS);
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();
@@ -382,7 +316,7 @@ int main(int argc, char** argv)
 	
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
 	glutInitWindowSize(800, 600);
-	glutCreateWindow ("Project 1");
+	glutCreateWindow ("Project 2");
 
 	// Intitalize driver
 	GLenum err = glewInit();
