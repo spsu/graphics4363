@@ -17,17 +17,21 @@ using namespace std;
 
 #include "libs/file.hpp"
 #include "libs/math.hpp"
-#include "libs/vertex.hpp"
-#include "libs/vao.hpp"
+//#include "libs/vertex.hpp"
+#include "object/vao.hpp"
+#include "object/KixorObjectLoader.hpp"
 #include "shaderlib/compiler.hpp"
 #include "shaderlib/registry.hpp"
 #include "geometry/basic.hpp"
-#include "geometry/sphere.hpp"
 
-#include "loader/objLoader.h"
 
 const string FRAGMENT_SHADER = "./source/shaders/fshader.fp";
 const string VERTEX_SHADER = "./source/shaders/vshader.vp";
+
+VertexArray* vao1 = 0;
+VertexArray* vao2 = 0;
+VertexArray* vao3 = 0;
+VertexArray* vao4 = 0;
 
 // Program ID
 GLint pId = 0;
@@ -64,55 +68,9 @@ GLfloat zRotCounter = 0.0f;
 GLuint lightLoc(0);
 GLuint dcLoc(0);
 
-int NUM_VERTS = 0;
-
-vector<GLfloat> getVertices(objLoader* loader)
-{
-	vector<GLfloat> vertices;
-	obj_vector* vertex;
-	obj_face* face;
-
-	printf("Wavefront .obj Report\n======================\n");
-	printf("Faces:\t%i\n", loader->faceCount);
-	printf("Vertices:\t%i\n", loader->vertexCount);
-
-	for(int i = 0; i < loader->faceCount; i++)
-	{
-		face = loader->faceList[i];
-		for(int j = 0; j < face->vertex_count; j++) {
-			vertex = loader->vertexList[ face->vertex_index[j] ];
-			vertices.push_back((float)vertex->e[0]);
-			vertices.push_back((float)vertex->e[1]);
-			vertices.push_back((float)vertex->e[2]);
-		}
-	}
-	
-	return vertices;
-}
-
-vector<GLfloat> getNormals(objLoader* loader)
-{
-	vector<GLfloat> normals;
-	obj_vector* normal;
-	obj_face* face;
-
-	printf("Wavefront .obj Report\n======================\n");
-	printf("Faces:\t%i\n", loader->faceCount);
-	printf("Normals:\t%i\n", loader->normalCount);
-
-	for(int i = 0; i < loader->faceCount; i++)
-	{
-		face = loader->faceList[i];
-		for(int j = 0; j < face->vertex_count; j++) {
-			normal = loader->normalList[ face->normal_index[j] ];
-			normals.push_back((float)normal->e[0]);
-			normals.push_back((float)normal->e[1]);
-			normals.push_back((float)normal->e[2]);
-		}
-	}
-	
-	return normals;
-}
+KixorObjectLoader* sphereLoader = 0;    
+KixorObjectLoader* torusLoader= 0;    
+KixorObjectLoader* cubeLoader = 0;    
 
 void setup()
 {
@@ -128,21 +86,6 @@ void setup()
 	// Depth testing.
 	glEnable(GL_DEPTH_TEST);
 
-	vector<GLfloat> vertices;
-	vector<GLfloat> normals;
-
-	objLoader *objData = new objLoader();
-	objData->load("assets/sphere.obj");
-
-	vertices = getVertices(objData);
-	normals = getNormals(objData);
-
-	NUM_VERTS = vertices.size()/3;
-
-	VertexArray* vao2 = new VertexArray();
-	vao2->loadVertices(vertices);
-	vao2->loadNormals(normals);
-	
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
 	mRotX = new GLfloat[16];
@@ -161,8 +104,16 @@ void setup()
 	// mat, fov, aspect, near, far
 	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
 
-	//glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
-	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
+	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+
+	sphereLoader = new KixorObjectLoader("assets/sphere.obj");
+	torusLoader = new KixorObjectLoader("assets/torus.obj");
+	cubeLoader = new KixorObjectLoader("assets/cube.obj");
+
+	// XXX: Create VAO. 
+	vao1 = new VertexArray();
+	vao1->loadVertices(sphereLoader->getVertices());
+	vao1->loadNormals(sphereLoader->getNormals());
 }
 
 
@@ -230,7 +181,11 @@ void render(void)
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
 	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
-	glDrawArrays(GL_QUADS, 0, NUM_VERTS);
+	//glDrawArrays(GL_QUADS, 0, NUM_VERTS);
+
+	if(xRot) {
+		vao1->draw();
+	}
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();

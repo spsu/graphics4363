@@ -4,7 +4,8 @@
 VertexArray::VertexArray() :
 	vao(0),
 	vbo_vertex(0),
-	vbo_color(0)
+	vbo_color(0),
+	numVertices(0)
 {
 	glGenVertexArrays(1, &vao); // Create only one
 	glBindVertexArray(vao);
@@ -41,6 +42,8 @@ void VertexArray::loadVertices(std::vector<GLfloat> vertices)
 
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	numVertices = vertices.size()/3;
 }
 
 void VertexArray::loadVertices(GLfloat* vertices, GLuint num)
@@ -59,6 +62,8 @@ void VertexArray::loadVertices(GLfloat* vertices, GLuint num)
 
 	glEnableVertexAttribArray(loc);
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	numVertices = num;
 }
 
 void VertexArray::loadColors(GLfloat* colors, GLuint num)
@@ -105,6 +110,12 @@ void VertexArray::loadNormals(std::vector<GLfloat> normals)
 	// Associate vertices with currently bound buffer.
 	// index, numComponents, type, doNormalization, stride, first item ptr
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+
+void VertexArray::draw()
+{
+	glBindVertexArray(vao);
+	glDrawArrays(GL_QUADS, 0, numVertices);
 }
 
 

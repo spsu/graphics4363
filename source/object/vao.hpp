@@ -20,11 +20,10 @@
 #include <vector>
 
 /**
- * TODO: Subclass with a Model class that automatically imports vertices, 
- * normals, etc.
+ * TODO: Rename 'Model' or 'Geometry'
  *
- * TODO: Figure out how to clone, turn "on" and "off", how to translate, rotate,
- * etc only a single object. 
+ * TODO: Figure out how to clone, turn "on" and "off", how to translate,
+ * rotate, etc only a single object. 
  */
 class VertexArray
 {
@@ -49,6 +48,11 @@ class VertexArray
 
 		void loadNormals(std::vector<GLfloat> normals);
 
+		/**
+		 * Draw.
+		 */
+		void draw();
+
 	private: 
 
 		/**
@@ -62,6 +66,11 @@ class VertexArray
 		GLuint vbo_vertex;
 		GLuint vbo_color;
 		GLuint vbo_normal;
+
+		/**
+		 * Number of vertices. 
+		 */
+		int numVertices;
 };
 
 #endif
