@@ -82,6 +82,7 @@ void VertexArray::loadColors(GLfloat* colors, GLuint num, GLint programId)
 
 	glEnableVertexAttribArray(loc);
 
+	// index, numComponents, type, doNormalization, stride, first item ptr
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
@@ -107,6 +108,8 @@ void VertexArray::loadNormals(std::vector<GLfloat> normals, GLint programId)
 	loc = glGetAttribLocation(programId, "vNormal");
 
 	glEnableVertexAttribArray(loc);
+
+	// index, numComponents, type, doNormalization, stride, first item ptr
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 

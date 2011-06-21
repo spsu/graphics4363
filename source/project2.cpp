@@ -55,6 +55,9 @@ GLfloat xRotCounter = 0.0f;
 GLfloat yRotCounter = 0.0f;
 GLfloat zRotCounter = 0.0f;
 
+GLuint lightLoc(0);
+GLuint dcLoc(0);
+
 int NUM_VERTS = 0;
 
 vector<GLfloat> getVertices(objLoader* loader)
@@ -93,8 +96,9 @@ vector<GLfloat> getNormals(objLoader* loader)
 {
 	vector<GLfloat> normals;
 	obj_vector* normal;
+	obj_face* face;
 
-	for(int i = 0; i < loader->normalCount; i++)
+	/*for(int i = 0; i < loader->normalCount; i++)
 	{
 		normal = loader->normalList[i];
 		normals.push_back((float)normal->e[0]);
@@ -102,6 +106,23 @@ vector<GLfloat> getNormals(objLoader* loader)
 		normals.push_back((float)normal->e[2]);
 	}
 
+	return normals;*/
+
+	printf("Wavefront .obj Report\n======================\n");
+	printf("Faces:\t%i\n", loader->faceCount);
+	printf("Normals:\t%i\n", loader->normalCount);
+
+	for(int i = 0; i < loader->faceCount; i++)
+	{
+		face = loader->faceList[i];
+		for(int j = 0; j < 3; j++) {
+			normal = loader->normalList[ face->normal_index[j] ];
+			normals.push_back((float)normal->e[0]);
+			normals.push_back((float)normal->e[1]);
+			normals.push_back((float)normal->e[2]);
+		}
+	}
+	
 	return normals;
 }
 
@@ -146,16 +167,19 @@ void setup()
 	vector<GLfloat> normals;
 
 	objLoader *objData = new objLoader();
-	objData->load("assets/torus.obj");
+	objData->load("assets/cube.obj");
 
 	vertices = getVertices(objData);
 	normals = getNormals(objData);
+
 	//vertices = vector<GLfloat>(TRIANGLE_A, TRIANGLE_A + sizeof(TRIANGLE_A) / sizeof(GLfloat));
 	//vertices = vector<GLfloat>(LETTER_B, LETTER_B+ sizeof(LETTER_B) / sizeof(float));
 
 	NUM_VERTS = vertices.size()/3;
 	cout << "Number of points: " << vertices.size() << endl;
 	printVertices(vertices);
+	cout << "Normals: " << endl;
+	printVertices(normals);
 
 
 	/*GLfloat verts2[900000];
@@ -186,6 +210,10 @@ void setup()
 	mMV = new GLfloat[16];
 	mCam = new GLfloat[16];
 
+	// XXX: Lighting
+	lightLoc = glGetUniformLocation(pId, "lightPos");
+	dcLoc = glGetUniformLocation(pId, "diffuseColor");
+
 	// fov, aspect, near, far
 	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
 	//makePerspectiveProjectionMatrix(mP, 180.0f, 1.0f, 0.0f, 2100.0f);
@@ -209,6 +237,16 @@ void resizeCb(int w, int h)
 void render(void) 
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
+	// XXX: Lighting
+	GLfloat lightPos[] = { counter, 100.0f, 100.0f };
+	GLfloat diffuseColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	glUniform3fv(lightLoc, 1, lightPos);
+	glUniform4fv(dcLoc, 1, diffuseColor);
+
+	//glUniformMatrix3fv(lightLoc, 1, GL_FALSE, pId);
+	//glUniformMatrix4fv(dcLoc, 1, GL_FALSE, pId);
 
 	// XXX: Work here
 	counter += 0.05f;
