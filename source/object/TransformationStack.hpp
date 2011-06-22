@@ -30,6 +30,8 @@ class TransformationStack
 		 */
 		void pop();
 
+		unsigned int size();
+
 		/**
 		 * Translation functions.
 		 */

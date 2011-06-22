@@ -13,7 +13,7 @@ VertexArray::VertexArray() :
 	primitiveMode(GL_TRIANGLES),
 	vRot(),
 	vScale(1.0f, 1.0f, 1.0f),
-	vTrans(),
+	vTrans(0.0f, 0.0f, 0.0f),
 	mTransform(0),
 	recalcMat(true) // Must calculate on first draw
 {
@@ -172,14 +172,16 @@ void VertexArray::draw()
 		//math::translate(mTransform, 0.0f, 0.0f, 0.0f);
 		
 		tStack->translate(vTrans.x, vTrans.y, vTrans.z);
+		//tStack->translate(0.0f, -5.0f, -5.0f);
 		recalcMat = false;
 	}
+
+	glBindVertexArray(vao);
 
 	GLuint r = glGetUniformLocation(Registry::getProgramId(), "mv");
 	//glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);
 	glUniformMatrix4fv(r, 1, GL_TRUE, tStack->top());
 
-	glBindVertexArray(vao);
 	glDrawArrays(primitiveMode, 0, numVertices);
 
 	tStack->pop();

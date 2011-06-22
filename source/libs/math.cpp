@@ -50,6 +50,17 @@ GLfloat* newIdentityMat()
 	return id;
 }
 
+GLfloat* copyMat(GLfloat* old)
+{
+	GLfloat* newMat = new GLfloat[16];
+
+	for(unsigned int i = 0; i < 16; i++) {
+		newMat[i] = old[i];
+	}
+
+	return newMat;	
+}
+
 /**
  * Modified function found on the official OpenGL wiki.
  * http://www.opengl.org/wiki/GluPerspective_code

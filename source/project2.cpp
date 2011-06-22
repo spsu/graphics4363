@@ -130,6 +130,12 @@ void setup()
 	vao4 = new VertexArray();
 	vao4->loadVertices(sphereLoader->getVertices());
 	vao4->loadNormals(sphereLoader->getNormals());
+
+	// XXX XXX XXX XXX XXX Initial offset
+	TransformationStack* transformStack = TransformationStackRegistry::get();
+	transformStack->translate(0.0f, 0.0f, -20.0f);
+	transformStack->translate(0.0f, 0.0f, -20.0f);
+	transformStack->translate(0.0f, 10.0f, -20.0f);
 }
 
 
@@ -179,24 +185,23 @@ void render(void)
 		zRotCounter += 0.05f;
 	}
 
-	math::rotateX(mRotX, xRotCounter);
-	math::rotateY(mRotY, yRotCounter);
-	math::rotateZ(mRotZ, zRotCounter);
+	//math::rotateX(mRotX, xRotCounter);
+	//math::rotateY(mRotY, yRotCounter);
+	//math::rotateZ(mRotZ, zRotCounter);
 
 	//math::translate(mTrans, xTrans, yTrans, zTrans);
 
+	//transformStack->push();
 
-	transformStack->translate(xTrans, yTrans, zTrans);
+	//transformStack->translate(xTrans, yTrans, zTrans);
 
-	vao3->translate(0.0f, 0.0f, 1.0f);
+	vao1->translate(0.0f, 0.0f, 1.0f);
 	vao4->translate(5.0f, 1.0f, 0.0f);
 
 	//rotateY(mRot, 0.0f);
-
-	math::matrixMult4x4(mRot, mRotX, mRotY);
+	//math::matrixMult4x4(mRot, mRotX, mRotY);
 	//matrixMult4x4(mRot, mRotMid, mRotZ);
-
-	math::matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
+	//math::matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -207,12 +212,12 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
+	//transformStack->pop();
+
 	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
 	//glDrawArrays(GL_QUADS, 0, NUM_VERTS);
 
-	if(xRot) {
-		vao1->draw();
-	}
+	vao1->draw();
 	vao2->draw();
 	vao3->draw();
 	vao4->draw();

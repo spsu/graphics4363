@@ -14,15 +14,25 @@
 
 namespace math 
 {
+
+	/**
+	 * Allocate a new identity matrix
+	 * XXX: Must call delete to deallocate.
+	 */
+	GLfloat* newIdentityMat();
+
+	/**
+	 * Copy a matrix. (Only 4x4)
+	 * XXX: Must call delete to dealloc.
+	 */
+	GLfloat* copyMat(GLfloat* f);
+
+
 	// Found on OpenGL wiki. Replaces fixed function GLU's Perspective. 
 	void glhPerspectivef2(GLfloat *matrix, GLfloat fovyInDegrees, 
 			GLfloat aspectRatio, GLfloat znear, GLfloat zfar);
 
-	// Allocate a new identity matrix
-	// XXX: Must call delete to deallocate.
-	GLfloat* newIdentityMat();
-
-	// Found on OpenGL wiki. Replaces fixed function GLU's Frustrum. 
+		// Found on OpenGL wiki. Replaces fixed function GLU's Frustrum. 
 	void glhFrustumf2(GLfloat *matrix, GLfloat left, GLfloat right, GLfloat bottom, 
 			GLfloat top, GLfloat znear, GLfloat zfar);
 
