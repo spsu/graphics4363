@@ -18,6 +18,10 @@ namespace math
 	void glhPerspectivef2(GLfloat *matrix, GLfloat fovyInDegrees, 
 			GLfloat aspectRatio, GLfloat znear, GLfloat zfar);
 
+	// Allocate a new identity matrix
+	// XXX: Must call delete to deallocate.
+	GLfloat* newIdentityMat();
+
 	// Found on OpenGL wiki. Replaces fixed function GLU's Frustrum. 
 	void glhFrustumf2(GLfloat *matrix, GLfloat left, GLfloat right, GLfloat bottom, 
 			GLfloat top, GLfloat znear, GLfloat zfar);

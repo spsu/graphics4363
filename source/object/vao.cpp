@@ -1,6 +1,8 @@
 #include "vao.hpp"
 #include "../shaderlib/registry.hpp"
 #include "../libs/math.hpp"
+#include "TransformationStack.hpp"
+#include "TransformationStackRegistry.hpp"
 #include <stdio.h>
 
 VertexArray::VertexArray() :
@@ -148,6 +150,10 @@ void VertexArray::translate(GLfloat x, GLfloat y, GLfloat z)
 
 void VertexArray::draw()
 {
+	// Graphics matrix stack pipeline.
+	TransformationStack* tStack = TransformationStackRegistry::get();
+	tStack->push();
+
 	/*GLfloat* mRotX;
 	GLfloat* mRotY;
 	GLfloat* mRotXY;
@@ -155,23 +161,28 @@ void VertexArray::draw()
 	GLfloat* mScale;
 	GLfloat* mTranslate;*/
 
-	if(recalcMat) 
+
+	//if(recalcMat) 
 	{
-		printf("MOVING VAO OBJECT\n");
 		/*rotateX(mRotX, vRot.x);
 		rotateY(mRotY, vRot.y);
 		rotateZ(mRotZ, vRot.z);*/
 
 		//translate(mTransform, vTrans.x, vTrans.y, vTrans.z);
-		math::translate(mTransform, 0.0f, 0.0f, 0.0f);
+		//math::translate(mTransform, 0.0f, 0.0f, 0.0f);
+		
+		tStack->translate(vTrans.x, vTrans.y, vTrans.z);
 		recalcMat = false;
 	}
 
 	GLuint r = glGetUniformLocation(Registry::getProgramId(), "mv");
-	glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);
+	//glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);
+	glUniformMatrix4fv(r, 1, GL_TRUE, tStack->top());
 
 	glBindVertexArray(vao);
 	glDrawArrays(primitiveMode, 0, numVertices);
+
+	tStack->pop();
 }
 
 

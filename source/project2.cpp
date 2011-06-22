@@ -20,6 +20,8 @@ using namespace std;
 //#include "libs/vertex.hpp"
 #include "object/vao.hpp"
 #include "object/KixorObjectLoader.hpp"
+#include "object/TransformationStack.hpp"
+#include "object/TransformationStackRegistry.hpp"
 #include "shaderlib/compiler.hpp"
 #include "shaderlib/registry.hpp"
 #include "geometry/basic.hpp"
@@ -138,6 +140,8 @@ void resizeCb(int w, int h)
 
 void render(void) 
 {
+	TransformationStack* transformStack = TransformationStackRegistry::get();
+
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	// XXX: Moving lighting. 
@@ -179,7 +183,13 @@ void render(void)
 	math::rotateY(mRotY, yRotCounter);
 	math::rotateZ(mRotZ, zRotCounter);
 
-	math::translate(mTrans, xTrans, yTrans, zTrans);
+	//math::translate(mTrans, xTrans, yTrans, zTrans);
+
+
+	transformStack->translate(xTrans, yTrans, zTrans);
+
+	vao3->translate(0.0f, 0.0f, 1.0f);
+	vao4->translate(5.0f, 1.0f, 0.0f);
 
 	//rotateY(mRot, 0.0f);
 
@@ -190,7 +200,8 @@ void render(void)
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
-	glUniformMatrix4fv(r, 1, GL_TRUE, mMV);
+	//glUniformMatrix4fv(r, 1, GL_TRUE, mMV);
+	glUniformMatrix4fv(r, 1, GL_TRUE, transformStack->top());
 
 	// Perspective matrix
 	GLuint p = glGetUniformLocation(pId, "p");
@@ -204,6 +215,7 @@ void render(void)
 	}
 	vao2->draw();
 	vao3->draw();
+	vao4->draw();
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();

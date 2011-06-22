@@ -26,6 +26,30 @@ namespace math {
 
 // ================== Math funcs found online. ============= //
 
+GLfloat* newIdentityMat()
+{
+	GLfloat* id = new GLfloat[16];
+	
+	id[0] = 1.0f; // 1
+	id[1] = 0.0f;
+	id[2] = 0.0f;
+	id[3] = 0.0f;
+	id[4] = 0.0f; // 2
+	id[5] = 1.0f;
+	id[6] = 0.0f;
+	id[7] = 0.0f;
+	id[8] = 0.0f; // 3
+	id[9] = 0.0f;
+	id[10] = 1.0f;
+	id[11] = 0.0f;
+	id[12] = 0.0f; // 4
+	id[13] = 0.0f;
+	id[14] = 0.0f;
+	id[15] = 1.0f;
+
+	return id;
+}
+
 /**
  * Modified function found on the official OpenGL wiki.
  * http://www.opengl.org/wiki/GluPerspective_code

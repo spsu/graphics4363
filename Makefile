@@ -79,6 +79,8 @@ build/libs: \
 	build/libs/vertex.o \
 	build/object/vao.o \
 	build/object/KixorObjectLoader.o \
+	build/object/TransformationStack.o \
+	build/object/TransformationStackRegistry.o \
 	build/shaderlib/compiler.o \
 	build/shaderlib/registry.o \
 	build/loader.o
@@ -103,6 +105,14 @@ build/object/vao.o: source/object/vao.hpp source/object/vao.cpp
 build/object/KixorObjectLoader.o: source/object/KixorObjectLoader.hpp source/object/KixorObjectLoader.cpp
 	@echo "[compile] KixorObjectLoader"
 	@$(CD) ./build/object && $(C) $(INC) -c ../../source/object/KixorObjectLoader.cpp
+
+build/object/TransformationStack.o: source/object/TransformationStack.hpp source/object/TransformationStack.cpp
+	@echo "[compile] TransformationStack"
+	@$(CD) ./build/object && $(C) $(INC) -c ../../source/object/TransformationStack.cpp
+
+build/object/TransformationStackRegistry.o: source/object/TransformationStackRegistry.hpp source/object/TransformationStackRegistry.cpp
+	@echo "[compile] TransformationStackRegistry"
+	@$(CD) ./build/object && $(C) $(INC) -c ../../source/object/TransformationStackRegistry.cpp
 
 build/shaderlib/compiler.o: source/shaderlib/compiler.hpp source/shaderlib/compiler.cpp
 	@echo "[compile] shader compiler"
