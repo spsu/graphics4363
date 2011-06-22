@@ -23,8 +23,8 @@ class Registry
 	private:
 		// XXX: This is a singleton!
 		Registry() {};
-		Registry(const Registry&);
-		Registry& operator=(const Registry&);
+		Registry(const Registry&) {};
+		Registry& operator=(const Registry&) {};
 
 		// The program ID
 		static GLint programId;

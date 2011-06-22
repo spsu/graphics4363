@@ -24,7 +24,6 @@ using namespace std;
 #include "shaderlib/registry.hpp"
 #include "geometry/basic.hpp"
 
-
 const string FRAGMENT_SHADER = "./source/shaders/fshader.fp";
 const string VERTEX_SHADER = "./source/shaders/vshader.vp";
 
@@ -102,7 +101,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
 
 	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 
@@ -176,22 +175,24 @@ void render(void)
 		zRotCounter += 0.05f;
 	}
 
-	rotateX(mRotX, xRotCounter);
-	rotateY(mRotY, yRotCounter);
-	rotateZ(mRotZ, zRotCounter);
+	math::rotateX(mRotX, xRotCounter);
+	math::rotateY(mRotY, yRotCounter);
+	math::rotateZ(mRotZ, zRotCounter);
 
-	translate(mTrans, xTrans, yTrans, zTrans);
+	math::translate(mTrans, xTrans, yTrans, zTrans);
 
 	//rotateY(mRot, 0.0f);
 
-	matrixMult4x4(mRot, mRotX, mRotY);
+	math::matrixMult4x4(mRot, mRotX, mRotY);
 	//matrixMult4x4(mRot, mRotMid, mRotZ);
 
-	matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
+	math::matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
 
+	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
 	glUniformMatrix4fv(r, 1, GL_TRUE, mMV);
 
+	// Perspective matrix
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 

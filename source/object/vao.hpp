@@ -18,6 +18,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <vector>
+#include "../libs/types.hpp"
 
 /**
  * TODO: Rename 'Model' or 'Geometry'
@@ -45,8 +46,16 @@ class VertexArray
 		void loadVertices(std::vector<GLfloat> vertices);
 		void loadVertices(GLfloat* vertices, GLuint num);
 		void loadColors(GLfloat* colors, GLuint num);
-
 		void loadNormals(std::vector<GLfloat> normals);
+
+		/**
+		 * Define transformations for the object.
+		 * Setting up the matrix is CPU-bound, and does not occur on
+		 * the GPU. Calculations occur in the draw() function.  
+		 */
+		void rotate(GLfloat x, GLfloat y, GLfloat z);
+		void scale(GLfloat x, GLfloat y, GLfloat z);
+		void translate(GLfloat x, GLfloat y, GLfloat z);
 
 		/**
 		 * Draw.
@@ -71,6 +80,25 @@ class VertexArray
 		 * Number of vertices. 
 		 */
 		int numVertices;
+
+		/**
+		 * Type of primitive.
+		 * GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_QUADS, etc.
+		 */
+		GLuint primitiveMode;
+
+		/**
+		 * Saved transformation data.
+		 */
+		Vertex vRot;
+		Vertex vScale;
+		Vertex vTrans;
+
+		/**
+		 * Matrix representing the transformation data.
+		 */
+		GLfloat* mTransform;
+		bool recalcMat;
 };
 
 #endif

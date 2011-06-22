@@ -1,19 +1,35 @@
 #include "vao.hpp"
 #include "../shaderlib/registry.hpp"
+#include "../libs/math.hpp"
+#include <stdio.h>
 
 VertexArray::VertexArray() :
 	vao(0),
 	vbo_vertex(0),
 	vbo_color(0),
-	numVertices(0)
+	numVertices(0),
+	primitiveMode(GL_TRIANGLES),
+	vRot(),
+	vScale(1.0f, 1.0f, 1.0f),
+	vTrans(),
+	mTransform(0),
+	recalcMat(true) // Must calculate on first draw
 {
 	glGenVertexArrays(1, &vao); // Create only one
 	glBindVertexArray(vao);
 
 	// TODO: Once I understand better, allocate together into an array. 
+	// TODO: For now, we should allocate these as they are requested, 
+	// not upfront
 	glGenBuffers(1, &vbo_vertex);
 	glGenBuffers(1, &vbo_color);
 	glGenBuffers(1, &vbo_normal);
+
+	// TODO: Temporary. This is how imported objs load.
+	// Need a way to better specify this
+	primitiveMode = GL_QUADS; 
+
+	mTransform = new GLfloat[16];
 }
 
 VertexArray::~VertexArray()
@@ -112,10 +128,50 @@ void VertexArray::loadNormals(std::vector<GLfloat> normals)
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
+void VertexArray::rotate(GLfloat x, GLfloat y, GLfloat z)
+{
+	vRot = Vertex(x, y, z);
+	recalcMat = true;
+}
+
+void VertexArray::scale(GLfloat x, GLfloat y, GLfloat z)
+{
+	vScale = Vertex(x, y, z);
+	recalcMat = true;
+}
+
+void VertexArray::translate(GLfloat x, GLfloat y, GLfloat z)
+{
+	vTrans = Vertex(x, y, z);
+	recalcMat = true;
+}
+
 void VertexArray::draw()
 {
+	/*GLfloat* mRotX;
+	GLfloat* mRotY;
+	GLfloat* mRotXY;
+	GLfloat* mRotZ;
+	GLfloat* mScale;
+	GLfloat* mTranslate;*/
+
+	if(recalcMat) 
+	{
+		printf("MOVING VAO OBJECT\n");
+		/*rotateX(mRotX, vRot.x);
+		rotateY(mRotY, vRot.y);
+		rotateZ(mRotZ, vRot.z);*/
+
+		//translate(mTransform, vTrans.x, vTrans.y, vTrans.z);
+		math::translate(mTransform, 0.0f, 0.0f, 0.0f);
+		recalcMat = false;
+	}
+
+	GLuint r = glGetUniformLocation(Registry::getProgramId(), "mv");
+	glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);
+
 	glBindVertexArray(vao);
-	glDrawArrays(GL_QUADS, 0, numVertices);
+	glDrawArrays(primitiveMode, 0, numVertices);
 }
 
 

@@ -22,6 +22,8 @@
 #define T14 11
 #define T15 15
 
+namespace math {
+
 // ================== Math funcs found online. ============= //
 
 /**
@@ -33,7 +35,7 @@ void glhPerspectivef2(GLfloat *matrix, GLfloat fovyInDegrees,
 		GLfloat aspectRatio, GLfloat znear, GLfloat zfar)
 {
     float ymax, xmax;
-    float temp, temp2, temp3, temp4;
+    //float temp, temp2, temp3, temp4;
     ymax = znear * tanf(fovyInDegrees * M_PI / 360.0);
     //ymin = -ymax;
     //xmin = -ymax * aspectRatio;
@@ -165,4 +167,5 @@ void print4x4Matrix(GLfloat* mat) {
 	printf ("\n");
 }
 
+} // end namespace math
 
