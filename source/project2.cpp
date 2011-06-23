@@ -108,7 +108,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 100.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 1000.0f);
 
 	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 
@@ -197,7 +197,8 @@ void render(void)
 	transformStack->applyTransform();
 
 	vao1->translate(2.0f, 0.0f, 0.0f);
-	vao1->scale(0.7f, 0.3f, 0.5f);
+	vao1->rotate(xRotCounter, yRotCounter, zRotCounter);
+	//vao1->scale(0.7f, 0.3f, 0.5f);
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -275,7 +276,6 @@ void keypress(unsigned char key, int x, int y)
 			zRot = !zRot;
 			break;
 	}
-	printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
 }
 
 int main(int argc, char** argv)

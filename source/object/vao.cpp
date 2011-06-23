@@ -79,7 +79,8 @@ void VertexArray::loadVertices(Lib3dsVector* vertices, int numFaces)
 
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	numVertices = numFaces; // XXX FIXME: This is just a guess.
+	numVertices = numFaces*3;
+	primitiveMode = GL_TRIANGLES; 
 }
 
 
