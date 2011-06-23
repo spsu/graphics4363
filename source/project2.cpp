@@ -191,9 +191,8 @@ void render(void)
 
 	//math::translate(mTrans, xTrans, yTrans, zTrans);
 
-	//transformStack->push();
-
-	//transformStack->translate(xTrans, yTrans, zTrans);
+	transformStack->push();
+	transformStack->translate(xTrans, yTrans, zTrans);
 
 	vao1->translate(0.0f, 0.0f, 1.0f);
 	vao4->translate(5.0f, 1.0f, 0.0f);
@@ -221,6 +220,8 @@ void render(void)
 	vao2->draw();
 	vao3->draw();
 	vao4->draw();
+
+	transformStack->pop();
 
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();
