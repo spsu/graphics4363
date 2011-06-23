@@ -88,8 +88,6 @@ void TransformationStack::applyTransform()
 	math::rotateY(rotY, vRot.y);
 	math::rotateZ(rotZ, vRot.z);
 
-	printf("XZY: %f, %f, %f\n", vRot.x, vRot.y, vRot.z);
-
 	math::matrixMult4x4(rotXY, rotX, rotY);
 	math::matrixMult4x4(rotXYZ, rotXY, rotZ);
 
@@ -97,8 +95,8 @@ void TransformationStack::applyTransform()
 	math::translate(trans, vTrans.x, vTrans.y, vTrans.z);
 
 	// Combine. 
-	//math::matrixMult4x4(rotTrans, trans, rotXYZ);
-	math::matrixMult4x4(rotTrans, rotXYZ, trans);
+	math::matrixMult4x4(rotTrans, trans, rotXYZ);
+	//math::matrixMult4x4(rotTrans, rotXYZ, trans);
 
 	// Final combine. 
 	//math::matrixMult4x4(newTop, top, rotTrans);
