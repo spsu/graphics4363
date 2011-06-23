@@ -9,7 +9,7 @@ SHARED = g++ -shared -lstdc++
 CD = cd
 RM = /bin/rm -f
 INC = -I/usr/local/include -I/usr/include/GL
-LIB = -lglut -lGL -lGLU -lGLEW -lgltools
+LIB = -lglut -lGL -lGLU -lGLEW -lgltools -l3ds
 #INC = `pkg-config --cflags-only-I ......` #
 #LIB = `pkg-config --libs ...... ` #
 
@@ -79,6 +79,7 @@ build/libs: \
 	build/libs/vertex.o \
 	build/object/vao.o \
 	build/object/KixorObjectLoader.o \
+	build/object/Lib3dsLoader.o \
 	build/object/TransformationStack.o \
 	build/object/TransformationStackRegistry.o \
 	build/shaderlib/compiler.o \
@@ -101,6 +102,10 @@ build/libs/vertex.o: source/libs/vertex.hpp source/libs/vertex.cpp
 build/object/vao.o: source/object/vao.hpp source/object/vao.cpp
 	@echo "[compile] vao lib"
 	@$(CD) ./build/object && $(C) $(INC) -c ../../source/object/vao.cpp
+
+build/object/Lib3dsLoader.o: source/object/Lib3dsLoader.hpp source/object/Lib3dsLoader.cpp
+	@echo "[compile] Lib3dsLoader"
+	@$(CD) ./build/object && $(C) $(INC) -c ../../source/object/Lib3dsLoader.cpp
 
 build/object/KixorObjectLoader.o: source/object/KixorObjectLoader.hpp source/object/KixorObjectLoader.cpp
 	@echo "[compile] KixorObjectLoader"

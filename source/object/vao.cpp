@@ -64,6 +64,25 @@ void VertexArray::loadVertices(std::vector<GLfloat> vertices)
 	numVertices = vertices.size()/3;
 }
 
+void VertexArray::loadVertices(Lib3dsVector* vertices, int numFaces)
+{
+	GLuint loc(0);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_vertex);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Lib3dsVector)*3*numFaces, vertices, 
+			GL_STATIC_DRAW);
+
+	loc = glGetAttribLocation(Registry::getProgramId(), "vPosition");
+	glEnableVertexAttribArray(loc);
+
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	numVertices = numFaces; // XXX FIXME: This is just a guess.
+}
+
+
 void VertexArray::loadVertices(GLfloat* vertices, GLuint num)
 {
 	GLuint loc(0);
@@ -122,13 +141,32 @@ void VertexArray::loadNormals(std::vector<GLfloat> normals)
 			GL_STATIC_DRAW);
 
 	loc = glGetAttribLocation(Registry::getProgramId(), "vNormal");
-
 	glEnableVertexAttribArray(loc);
 
 	// Associate vertices with currently bound buffer.
 	// index, numComponents, type, doNormalization, stride, first item ptr
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
+
+void VertexArray::loadNormals(Lib3dsVector* normals, int numFaces)
+{
+	GLuint loc(0);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_normal);
+
+	// TODO: GL_STATIC_DRAW alternatives
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Lib3dsVector)*3*numFaces, normals, 
+			GL_STATIC_DRAW);
+
+	loc = glGetAttribLocation(Registry::getProgramId(), "vNormal");
+	glEnableVertexAttribArray(loc);
+
+	// Associate vertices with currently bound buffer.
+	// index, numComponents, type, doNormalization, stride, first item ptr
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+
 
 void VertexArray::rotate(GLfloat x, GLfloat y, GLfloat z)
 {

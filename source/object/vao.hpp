@@ -18,13 +18,21 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <vector>
+#include <lib3ds/types.h>
 #include "../libs/types.hpp"
 
 /**
- * TODO: Rename 'Model' or 'Geometry'
+ * FIXME: Rename to something else. I shouldn't really call this a VAO
+ * anymore since I've added so much functionality to it. Perhaps 
+ * 'Model' or 'Geometry' or similar with a suffix like 'Manager' etc.
+ * FIXME: Also, the names of the directories in this project are lame
+ * and confusing.
  *
- * TODO: Figure out how to clone, turn "on" and "off", how to translate,
- * rotate, etc only a single object. 
+ * TODO: Implement cloning. (Copy CTOR, etc.)
+ * TODO: Instancing. 
+ * TODO: Calling multiple objects to draw without OpenGL API overhead. 
+ *
+ * TODO: GL_STATIC_DRAW alternatives
  */
 class VertexArray
 {
@@ -44,9 +52,19 @@ class VertexArray
 		 * Load data.
 		 */
 		void loadVertices(std::vector<GLfloat> vertices);
+		void loadVertices(Lib3dsVector* vertices, int numFaces);
 		void loadVertices(GLfloat* vertices, GLuint num);
-		void loadColors(GLfloat* colors, GLuint num);
+	
+		/**
+		 * Load normals.
+		 */
 		void loadNormals(std::vector<GLfloat> normals);
+		void loadNormals(Lib3dsVector* vertices, int numFaces);
+
+		/**
+		 * Load colors.
+		 */
+		void loadColors(GLfloat* colors, GLuint num);
 
 		/**
 		 * Define transformations for the object.

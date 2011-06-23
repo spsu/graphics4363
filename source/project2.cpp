@@ -20,6 +20,7 @@ using namespace std;
 //#include "libs/vertex.hpp"
 #include "object/vao.hpp"
 #include "object/KixorObjectLoader.hpp"
+#include "object/Lib3dsLoader.hpp"
 #include "object/TransformationStack.hpp"
 #include "object/TransformationStackRegistry.hpp"
 #include "shaderlib/compiler.hpp"
@@ -33,6 +34,9 @@ VertexArray* vao1 = 0;
 VertexArray* vao2 = 0;
 VertexArray* vao3 = 0;
 VertexArray* vao4 = 0;
+VertexArray* vao5 = 0;
+VertexArray* vao6 = 0;
+VertexArray* vao7 = 0;
 
 // Program ID
 GLint pId = 0;
@@ -72,6 +76,7 @@ GLuint dcLoc(0);
 KixorObjectLoader* sphereLoader = 0;    
 KixorObjectLoader* torusLoader= 0;    
 KixorObjectLoader* cubeLoader = 0;    
+KixorObjectLoader* hmsLoader = 0;    
 
 void setup()
 {
@@ -107,34 +112,34 @@ void setup()
 
 	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 
-	sphereLoader = new KixorObjectLoader("assets/sphere.obj");
-	torusLoader = new KixorObjectLoader("assets/torus.obj");
-	cubeLoader = new KixorObjectLoader("assets/cube.obj");
+	// XXX: Trying  http://code.google.com/p/lib3ds/
+	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
 
-	// XXX: Create VAO. 
-	vao1 = new VertexArray();
-	vao1->loadVertices(sphereLoader->getVertices());
-	vao1->loadNormals(sphereLoader->getNormals());
 
-	// XXX: Create VAO. 
-	vao2 = new VertexArray();
-	vao2->loadVertices(torusLoader->getVertices());
-	vao2->loadNormals(torusLoader->getNormals());
 
-	// XXX: Create VAO. 
-	vao3 = new VertexArray();
-	vao3->loadVertices(cubeLoader->getVertices());
-	vao3->loadNormals(cubeLoader->getNormals());
 
-	// XXX: Create VAO. 
-	vao4 = new VertexArray();
-	vao4->loadVertices(sphereLoader->getVertices());
-	vao4->loadNormals(sphereLoader->getNormals());
 
-	// XXX XXX XXX XXX XXX Initial offset
+	Lib3dsLoader* loader = new Lib3dsLoader("assets/ocarina/masksalesman.3ds");
+	int faces = 0;
+
+	faces = loader->getNumFaces();
+
+	printf("\n\nNum faces in 3ds model: %d\n\n", faces);
+
+
+	vao1 = loader->buildVao();
+
+
+
+
+
+	// Create VAO. 
+	/*vao1 = new VertexArray();
+	vao1->loadVertices(hmsLoader->getVertices());
+	vao1->loadNormals(hmsLoader->getNormals());*/
+
+	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
-	//transformStack->translate(0.0f, 0.0f, -20.0f);
-	//transformStack->translate(0.0f, 0.0f, -20.0f);
 	transformStack->translate(0.0f, 0.0f, -6.0f);
 	transformStack->applyTransform();
 }
@@ -186,12 +191,6 @@ void render(void)
 		zRotCounter += 0.05f;
 	}
 
-	//math::rotateX(mRotX, xRotCounter);
-	//math::rotateY(mRotY, yRotCounter);
-	//math::rotateZ(mRotZ, zRotCounter);
-
-	//math::translate(mTrans, xTrans, yTrans, zTrans);
-
 	transformStack->push();
 	transformStack->translate(xTrans, yTrans, zTrans);
 	//transformStack->rotate(xRotCounter, yRotCounter, zRotCounter);
@@ -200,33 +199,15 @@ void render(void)
 	vao1->translate(2.0f, 0.0f, 0.0f);
 	vao1->scale(0.7f, 0.3f, 0.5f);
 
-	vao2->translate(-2.0f, 0.0f, 0.0f);
-	vao2->scale(0.5f, 0.5f, 0.5f);
-	vao2->rotate(xRotCounter, yRotCounter, zRotCounter);
-
-	vao3->translate(0.0f, 2.0f, 0.0f);
-	vao3->scale(1.5f, 1.5f, 1.5f);
-
-	vao4->translate(0.0f, -2.0f, 0.0f);
-
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
-	//glUniformMatrix4fv(r, 1, GL_TRUE, mMV);
 	glUniformMatrix4fv(r, 1, GL_TRUE, transformStack->top());
 
 	// Perspective matrix
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	//transformStack->pop();
-
-	//glDrawArrays(GL_TRIANGLES, 0, NUM_VERTS);
-	//glDrawArrays(GL_QUADS, 0, NUM_VERTS);
-
 	vao1->draw();
-	vao2->draw();
-	vao3->draw();
-	vao4->draw();
 
 	transformStack->pop();
 
