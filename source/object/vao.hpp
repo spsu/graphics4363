@@ -19,6 +19,7 @@
 #include <GL/glut.h>
 #include <vector>
 #include <lib3ds/types.h>
+#include <string>
 #include "../libs/types.hpp"
 
 /**
@@ -67,6 +68,17 @@ class VertexArray
 		void loadColors(GLfloat* colors, GLuint num);
 
 		/**
+		 * Load texture coords.
+		 */
+		void loadTextureCoords(Lib3dsTexel* texCoords, int numFaces);
+
+		/**
+		 * Load texture.
+		 * TODO
+		 */
+		void loadTexture(std::string filename);
+
+		/**
 		 * Define transformations for the object.
 		 * Setting up the matrix is CPU-bound, and does not occur on
 		 * the GPU. Calculations occur in the draw() function.  
@@ -91,8 +103,10 @@ class VertexArray
 		 * VBO handles
 		 */
 		GLuint vbo_vertex;
-		GLuint vbo_color;
 		GLuint vbo_normal;
+		GLuint vbo_color;
+		GLuint vbo_textureCoords;
+		GLuint textureId;
 
 		/**
 		 * Number of vertices. 

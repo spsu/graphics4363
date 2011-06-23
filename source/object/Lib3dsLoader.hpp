@@ -3,6 +3,7 @@
 
 /**
  * Inspired by http://www.donkerdump.nl/node/207
+ * and http://www.gamedev.net/topic/490141-lib3ds-texture-coordinates-and-vbos/
  */
 
 #include <string>

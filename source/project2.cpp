@@ -85,12 +85,11 @@ void setup()
 	// Use shader
 	glUseProgram(pId);
 
-	// Backface culling. 
+	// Backface culling, depth test, texture support 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-
-	// Depth testing.
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
@@ -110,7 +109,8 @@ void setup()
 	// mat, fov, aspect, near, far
 	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 1000.0f);
 
-	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// XXX: Trying  http://code.google.com/p/lib3ds/
 	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
@@ -128,7 +128,7 @@ void setup()
 
 
 	vao1 = loader->buildVao();
-
+	vao1->loadTexture("assets/ocarina/HappyMas.bmp");
 
 
 
@@ -140,7 +140,7 @@ void setup()
 
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
-	transformStack->translate(0.0f, 0.0f, -6.0f);
+	transformStack->translate(0.0f, 0.0f, -300.0f);
 	transformStack->applyTransform();
 }
 
@@ -197,7 +197,7 @@ void render(void)
 	transformStack->applyTransform();
 
 	vao1->translate(2.0f, 0.0f, 0.0f);
-	vao1->rotate(xRotCounter, yRotCounter, zRotCounter);
+	vao1->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
 	//vao1->scale(0.7f, 0.3f, 0.5f);
 
 	// Modelview Matrix

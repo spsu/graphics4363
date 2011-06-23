@@ -32,7 +32,7 @@ clean:
 .PHONY: stats
 stats:
 	@echo " Lines\tWords\tBytes\t"
-	@wc -l -w -c */*.*pp 
+	@wc -l -w -c */*.*pp */*/*.*pp
 	@echo " Lines\tWords\tBytes\t"
 
 
@@ -77,6 +77,7 @@ build/libs: \
 	build/libs/math.o \
 	build/libs/file.o \
 	build/libs/vertex.o \
+	build/libs/image.o \
 	build/object/vao.o \
 	build/object/KixorObjectLoader.o \
 	build/object/Lib3dsLoader.o \
@@ -98,6 +99,10 @@ build/libs/math.o: source/libs/math.hpp source/libs/math.cpp
 build/libs/vertex.o: source/libs/vertex.hpp source/libs/vertex.cpp
 	@echo "[compile] vertex lib"
 	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/vertex.cpp
+
+build/libs/image.o: source/libs/image.hpp source/libs/image.cpp
+	@echo "[compile] image lib"
+	@$(CD) ./build/libs && $(C) $(INC) -c ../../source/libs/image.cpp
 
 build/object/vao.o: source/object/vao.hpp source/object/vao.cpp
 	@echo "[compile] vao lib"

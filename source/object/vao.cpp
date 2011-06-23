@@ -1,14 +1,18 @@
 #include "vao.hpp"
 #include "../shaderlib/registry.hpp"
 #include "../libs/math.hpp"
+#include "../libs/image.hpp"
 #include "TransformationStack.hpp"
 #include "TransformationStackRegistry.hpp"
 #include <stdio.h>
+#include <stdlib.h>
 
 VertexArray::VertexArray() :
 	vao(0),
 	vbo_vertex(0),
 	vbo_color(0),
+	vbo_textureCoords(0),
+	textureId(0),
 	numVertices(0),
 	primitiveMode(GL_TRIANGLES),
 	vRot(),
@@ -24,8 +28,10 @@ VertexArray::VertexArray() :
 	// TODO: For now, we should allocate these as they are requested, 
 	// not upfront
 	glGenBuffers(1, &vbo_vertex);
-	glGenBuffers(1, &vbo_color);
 	glGenBuffers(1, &vbo_normal);
+	glGenBuffers(1, &vbo_color);
+	glGenBuffers(1, &vbo_textureCoords);
+	glGenTextures(1, &textureId);
 
 	// TODO: Temporary. This is how imported objs load.
 	// Need a way to better specify this
@@ -168,6 +174,74 @@ void VertexArray::loadNormals(Lib3dsVector* normals, int numFaces)
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
+void VertexArray::loadTextureCoords(Lib3dsTexel* texCoords, int numFaces)
+{
+	GLuint loc(0);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_textureCoords);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Lib3dsTexel)*3*numFaces, texCoords, 
+			GL_STATIC_DRAW);
+
+	loc = glGetAttribLocation(Registry::getProgramId(), "vTextureCoord");
+	glEnableVertexAttribArray(loc);
+	glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Associate vertices with currently bound buffer.
+	// index, numComponents, type, doNormalization, stride, first item ptr
+	//glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(36*sizeof(GLfloat))); // XXX: from slides
+	//glTexCoordPointer(2, GL_FLOAT, 0, NULL); // XXX XXX FIXME: Is this right?
+}
+
+// TODO TODO TODO TODO
+void VertexArray::loadTexture(std::string filename)
+{
+	GLuint loc(0);
+	int width = 0;
+	int height = 0;
+	int size = 0;
+	unsigned char* pixData = 0;
+	unsigned char* pixData2 = 0;
+
+	glBindTexture(GL_TEXTURE_2D, textureId);
+
+	// Read image data
+	// XXX/FIXME/FIXME: 
+	// This is stupidly inefficient: glTexImage2d needs 
+	// contiguous memory for the pixel data, but we can't get that on
+	// the first read. We have to know the file dimensions in order 
+	// to allocate the image memory, so we must do a second read after
+	// we have that information. 
+	loadBitmap(filename, &width, &height, &size, &pixData);
+
+	pixData2 = (unsigned char*) malloc(1024 * 1024 * 3);
+
+	loadBitmap(filename, &width, &height, &size, &pixData2);
+	// TODO: Setup
+	// XXX: '3' might be wrong. It is the internalFormat. 
+	// TODO: Make sure I understand all of this correctly.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, width, height, 0, 
+			GL_RGB, GL_UNSIGNED_BYTE, &pixData);
+
+	// Set wrapping and filtering modes
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+	// TODO: CLEANUP on delete VAO:, glDeleteTextures(TEXTURE_COUNT, textures)
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// XXX: I don't understand this... 
+	glActiveTexture(GL_TEXTURE0);
+	loc = glGetUniformLocation(Registry::getProgramId(), "texture");
+	glUniform1i(loc, 0);
+
+	glEnableVertexAttribArray(loc);
+}
 
 void VertexArray::rotate(GLfloat x, GLfloat y, GLfloat z)
 {
@@ -193,20 +267,9 @@ void VertexArray::draw()
 	TransformationStack* tStack = TransformationStackRegistry::get();
 	tStack->push();
 
-	/*GLfloat* mRotX;
-	GLfloat* mRotY;
-	GLfloat* mRotXY;
-	GLfloat* mRotZ;
-	GLfloat* mScale;
-	GLfloat* mTranslate;*/
-
 
 	//if(recalcMat) 
 	{
-		/*rotateX(mRotX, vRot.x);
-		rotateY(mRotY, vRot.y);
-		rotateZ(mRotZ, vRot.z);*/
-
 		//translate(mTransform, vTrans.x, vTrans.y, vTrans.z);
 		//math::translate(mTransform, 0.0f, 0.0f, 0.0f);
 		
@@ -219,6 +282,8 @@ void VertexArray::draw()
 	}
 
 	glBindVertexArray(vao);
+
+	glBindTexture(GL_TEXTURE_2D, textureId); // TODO TODO TODO TODO  TODO TODO  TODO TODO  TODO TODO  TODO TODO 
 
 	GLuint r = glGetUniformLocation(Registry::getProgramId(), "mv");
 	//glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);

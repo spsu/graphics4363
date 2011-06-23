@@ -42,7 +42,9 @@ VertexArray* Lib3dsLoader::buildVao()
 	VertexArray* vao = 0;
 	Lib3dsVector* verts = 0;
 	Lib3dsVector* norms = 0;
+	Lib3dsTexel* tex = 0;
 	Lib3dsMesh* mesh = 0;
+	//bool hasTexture = false; // TODO
 	unsigned int numFaces = 0;
 	unsigned int doneFaces = 0;
 
@@ -50,6 +52,7 @@ VertexArray* Lib3dsLoader::buildVao()
 
 	verts = new Lib3dsVector[numFaces * 3];
 	norms = new Lib3dsVector[numFaces * 3];
+	tex = new Lib3dsTexel[numFaces * 3];
 
 	mesh = model->meshes;
 
@@ -68,6 +71,12 @@ VertexArray* Lib3dsLoader::buildVao()
 				memcpy(&verts[doneFaces * 3 + j], 
 						mesh->pointL[face->points[j]].pos,
 						sizeof(Lib3dsVector));
+
+				if(mesh->texels) {
+					memcpy(&tex[doneFaces *3 + j], 
+							mesh->texelL[face->points[j]],
+							sizeof(Lib3dsTexel));
+				}     
 			}
 			doneFaces++;
 		}
@@ -77,9 +86,11 @@ VertexArray* Lib3dsLoader::buildVao()
 	vao = new VertexArray();
 	vao->loadVertices(verts, numFaces);
 	vao->loadNormals(norms, numFaces);
+	vao->loadTextureCoords(tex, numFaces);
 
 	delete[] verts;
 	delete[] norms;
+	delete[] tex;
 
 	return vao;
 }
