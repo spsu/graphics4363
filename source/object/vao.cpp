@@ -13,7 +13,7 @@ VertexArray::VertexArray() :
 	primitiveMode(GL_TRIANGLES),
 	vRot(),
 	vScale(1.0f, 1.0f, 1.0f),
-	vTrans(0.0f, 0.0f, 0.0f),
+	vTrans(),
 	mTransform(0),
 	recalcMat(true) // Must calculate on first draw
 {
@@ -172,6 +172,8 @@ void VertexArray::draw()
 		//math::translate(mTransform, 0.0f, 0.0f, 0.0f);
 		
 		tStack->translate(vTrans.x, vTrans.y, vTrans.z);
+		tStack->scale(vScale.x, vScale.y, vScale.z);
+		tStack->rotate(vRot.x, vRot.y, vRot.z);
 		tStack->applyTransform();
 		//tStack->translate(0.0f, -5.0f, -5.0f);
 		recalcMat = false;

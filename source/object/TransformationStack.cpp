@@ -84,44 +84,26 @@ void TransformationStack::applyTransform()
 	GLfloat* scale = new GLfloat[16];
 
 	// Combination.
-	GLfloat* rotTrans = new GLfloat[16];
-	GLfloat* rotScale = new GLfloat[16];
-	GLfloat* scaleTrans = new GLfloat[16];
+	GLfloat* scaleRot = new GLfloat[16];
 	GLfloat* srt = new GLfloat[16];
 
 	// Rotation
 	math::rotateX(rotX, vRot.x);
 	math::rotateY(rotY, vRot.y);
 	math::rotateZ(rotZ, vRot.z);
-
 	math::matrixMult4x4(rotXY, rotX, rotY);
 	math::matrixMult4x4(rotXYZ, rotXY, rotZ);
 
-	// Translation and scale.
-	math::translate(trans, vTrans.x, vTrans.y, vTrans.z);
+	// Scale and Translation. 
 	math::scale(scale, vScale.x, vScale.y, vScale.z);
-
-	printf("XYZ: %f, %f, %f\n", vScale.x, vScale.y, vScale.z);
-
-	//math::scale(scale, 2.0f, 2.0f, 2.0f);
-	//math::scale(scale, 1.0f, 1.0f, 1.0f);
+	math::translate(trans, vTrans.x, vTrans.y, vTrans.z);
 
 	// Combine. Order is S*R*T
-	math::matrixMult4x4(rotScale, scale, rotXYZ);
-	math::matrixMult4x4(srt, rotScale, trans);
-	math::matrixMult4x4(scaleTrans, trans, scale); 
+	math::matrixMult4x4(scaleRot, scale, rotXYZ);
+	math::matrixMult4x4(srt, scaleRot, trans);
 	
-
 	// Final combine. 
-	//math::matrixMult4x4(newTop, top, srt);
 	math::matrixMult4x4(newTop, srt, top);
-
-	//math::matrixMult4x4(newTop, scale, top); 
-	math::matrixMult4x4(newTop, top, scaleTrans);
-	math::matrixMult4x4(newTop, scaleTrans, top);
-
-	math::printMat(newTop);
-
 	matrixStack.top() = newTop;
 
 	// State changes were applied, so reset the pending state buffers
@@ -130,9 +112,20 @@ void TransformationStack::applyTransform()
 	vTrans = Vertex();
 
 	// TODO: Cleanup ALL state.
+	// TODO: Do this stuff on the stack, not the heap. 
 	// TODO: Only create matrices and do matrix math when absolutely 
 	// necessary to reduce overhead. 
 
-	delete top;
+	delete top; // XXX: Warn callee not to hold onto this. 
+
+	delete rotX;
+	delete rotY;
+	delete rotZ;
+	delete rotXY;
+	delete rotXYZ;
+	delete scale;
+	delete trans;
+	delete scaleRot;
+	delete srt;
 }
 
