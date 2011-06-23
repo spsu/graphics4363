@@ -9,7 +9,7 @@ struct Vertex
 	GLfloat w;
 
 	Vertex() :
-		x(1.0f), y(1.0f), z(1.0f), w(1.0f) {};
+		x(0.0f), y(0.0f), z(0.0f), w(1.0f) {};
 
 	Vertex(GLfloat px, GLfloat py, GLfloat pz) :
 		x(px), y(py), z(pz), w(1.0f) {};

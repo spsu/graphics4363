@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <stack>
+#include "../libs/types.hpp"
 
 class TransformationStack
 {
@@ -34,8 +35,17 @@ class TransformationStack
 
 		/**
 		 * Translation functions.
+		 * These are pending state changes that are committed to the 
+		 * top of the stack when applyTransform is called.
 		 */
+		void rotate(GLfloat x, GLfloat y, GLfloat z);
+		void scale(GLfloat x, GLfloat y, GLfloat z);
 		void translate(GLfloat x, GLfloat y, GLfloat z);
+
+		/**
+		 * Applies state changes.
+		 */
+		void applyTransform();
 
 	private:
 
@@ -45,10 +55,12 @@ class TransformationStack
 		std::stack<GLfloat*> matrixStack;
 
 		/**
-		 * Current matrix that is being operated on.
-		 * It can be saved to stack by calling save()
+		 * Pending state changes to the top of the stack.
+		 * Made when applyTransform() is called. 
 		 */
-		GLfloat* currentMatrix;
+		Vertex vRot;
+		Vertex vScale;
+		Vertex vTrans;
 
 		/**
 		 * Create a copy of the top matrix

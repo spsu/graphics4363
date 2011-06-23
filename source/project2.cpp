@@ -133,9 +133,10 @@ void setup()
 
 	// XXX XXX XXX XXX XXX Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
-	transformStack->translate(0.0f, 0.0f, -20.0f);
-	transformStack->translate(0.0f, 0.0f, -20.0f);
-	transformStack->translate(0.0f, 10.0f, -20.0f);
+	//transformStack->translate(0.0f, 0.0f, -20.0f);
+	//transformStack->translate(0.0f, 0.0f, -20.0f);
+	transformStack->translate(0.0f, 0.0f, -6.0f);
+	transformStack->applyTransform();
 }
 
 
@@ -193,14 +194,13 @@ void render(void)
 
 	transformStack->push();
 	transformStack->translate(xTrans, yTrans, zTrans);
+	transformStack->rotate(xRotCounter, yRotCounter, zRotCounter);
+	transformStack->applyTransform();
 
-	vao1->translate(0.0f, 0.0f, 1.0f);
-	vao4->translate(5.0f, 1.0f, 0.0f);
-
-	//rotateY(mRot, 0.0f);
-	//math::matrixMult4x4(mRot, mRotX, mRotY);
-	//matrixMult4x4(mRot, mRotMid, mRotZ);
-	//math::matrixMult4x4(mMV, mRot, mTrans); // mMV now holds combination...
+	vao1->translate(2.0f, 0.0f, 0.0f);
+	vao2->translate(-2.0f, 0.0f, 0.0f);
+	vao3->translate(0.0f, 2.0f, 0.0f);
+	vao4->translate(0.0f, -2.0f, 0.0f);
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
