@@ -43,6 +43,8 @@ namespace math
 	void matrixMult4x4 (GLfloat* result, GLfloat* m1, GLfloat* m2); 
 
 	void translate (GLfloat* result, GLfloat x, GLfloat y, GLfloat z);
+	
+	void scale(GLfloat* result, GLfloat x, GLfloat y, GLfloat z);
 
 	void rotateX (GLfloat* result, GLfloat rotation);
 
@@ -50,7 +52,8 @@ namespace math
 
 	void rotateZ (GLfloat* result, GLfloat rotation);
 
-	void print4x4Matrix(GLfloat* mat);
+	// Only prints 4x4
+	void printMat(GLfloat* mat);
 
 }
 

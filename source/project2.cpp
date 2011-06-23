@@ -198,8 +198,15 @@ void render(void)
 	transformStack->applyTransform();
 
 	vao1->translate(2.0f, 0.0f, 0.0f);
+	vao1->scale(0.7f, 0.3f, 0.5f);
+
 	vao2->translate(-2.0f, 0.0f, 0.0f);
+	vao2->scale(0.5f, 0.5f, 0.5f);
+	vao2->rotate(0.5f, 0.5f, 0.5f);
+
 	vao3->translate(0.0f, 2.0f, 0.0f);
+	vao3->scale(2.0f, 2.0f, 2.0f);
+
 	vao4->translate(0.0f, -2.0f, 0.0f);
 
 	// Modelview Matrix

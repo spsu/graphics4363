@@ -5,7 +5,7 @@
 TransformationStack::TransformationStack():
 	matrixStack(),
 	vRot(),
-	vScale(),
+	vScale(1.0f, 1.0f, 1.0f),
 	vTrans()
 {
 	GLfloat* first = math::newIdentityMat(); 
@@ -18,7 +18,7 @@ void TransformationStack::push()
 
 	// Pending state changes no longer apply
 	vRot = Vertex();
-	vScale = Vertex();
+	vScale = Vertex(1.0f, 1.0f, 1.0f);
 	vTrans = Vertex();
 }
 
@@ -31,7 +31,7 @@ void TransformationStack::pop()
 
 	// Pending state changes no longer apply
 	vRot = Vertex();
-	vScale = Vertex();
+	vScale = Vertex(1.0f, 1.0f, 1.0f);
 	vTrans = Vertex();
 
 	delete prev; // XXX: Careful. Warn about shared ptr in doc.
@@ -81,7 +81,13 @@ void TransformationStack::applyTransform()
 	GLfloat* rotXY = new GLfloat[16];
 	GLfloat* rotXYZ = new GLfloat[16];
 	GLfloat* trans = new GLfloat[16];
+	GLfloat* scale = new GLfloat[16];
+
+	// Combination.
 	GLfloat* rotTrans = new GLfloat[16];
+	GLfloat* rotScale = new GLfloat[16];
+	GLfloat* scaleTrans = new GLfloat[16];
+	GLfloat* srt = new GLfloat[16];
 
 	// Rotation
 	math::rotateX(rotX, vRot.x);
@@ -91,22 +97,36 @@ void TransformationStack::applyTransform()
 	math::matrixMult4x4(rotXY, rotX, rotY);
 	math::matrixMult4x4(rotXYZ, rotXY, rotZ);
 
-	// Translation. 
+	// Translation and scale.
 	math::translate(trans, vTrans.x, vTrans.y, vTrans.z);
+	math::scale(scale, vScale.x, vScale.y, vScale.z);
 
-	// Combine. 
-	math::matrixMult4x4(rotTrans, trans, rotXYZ);
-	//math::matrixMult4x4(rotTrans, rotXYZ, trans);
+	printf("XYZ: %f, %f, %f\n", vScale.x, vScale.y, vScale.z);
+
+	//math::scale(scale, 2.0f, 2.0f, 2.0f);
+	//math::scale(scale, 1.0f, 1.0f, 1.0f);
+
+	// Combine. Order is S*R*T
+	math::matrixMult4x4(rotScale, scale, rotXYZ);
+	math::matrixMult4x4(srt, rotScale, trans);
+	math::matrixMult4x4(scaleTrans, trans, scale); 
+	
 
 	// Final combine. 
-	//math::matrixMult4x4(newTop, top, rotTrans);
-	math::matrixMult4x4(newTop, rotTrans, top);
+	//math::matrixMult4x4(newTop, top, srt);
+	math::matrixMult4x4(newTop, srt, top);
+
+	//math::matrixMult4x4(newTop, scale, top); 
+	math::matrixMult4x4(newTop, top, scaleTrans);
+	math::matrixMult4x4(newTop, scaleTrans, top);
+
+	math::printMat(newTop);
 
 	matrixStack.top() = newTop;
 
 	// State changes were applied, so reset the pending state buffers
 	vRot = Vertex();
-	vScale = Vertex();
+	vScale = Vertex(1.0f, 1.0f, 1.0f);
 	vTrans = Vertex();
 
 	// TODO: Cleanup ALL state.

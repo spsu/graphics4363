@@ -163,6 +163,17 @@ void translate (GLfloat* result, GLfloat x, GLfloat y, GLfloat z) {
 	
 }
 
+void scale(GLfloat* result, GLfloat x, GLfloat y, GLfloat z)
+{
+	for(unsigned int i = 0; i < 16; i++) {
+		result[i] = 0.0f;
+	}
+	result[0] = x;
+	result[5] = y;
+	result[10] = z;
+	result[15] = 1.0f;
+}
+
 void rotateX (GLfloat* result, GLfloat rotation) {
 	for (int i = 0; i < 16; i++) {
 		result[i] = 0.0f;
@@ -193,7 +204,7 @@ void rotateZ (GLfloat* result, GLfloat rotation) {
 	result[4] = -result[1];
 	result[10] = result[15] = 1;
 }
-void print4x4Matrix(GLfloat* mat) {
+void printMat(GLfloat* mat) {
 	printf ("====================================");
 	for (int i = 0; i < 16; i++) {
 		if (i%4 == 0) printf ("\n");
