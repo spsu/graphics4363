@@ -3,11 +3,11 @@ Graphics I
 
 This constitutes project work from Graphics I.
 
-C/C++ Sources 
--------------
+The code was written in a Unix environment. The code _probably_ compiles
+elsewhere, but don't take my word for it. At minimum, the Makefile will 
+require changes in order to build on other systems.
 
-These sources were built in a Unix environment. (It works fine on my
-Ubuntu 11.04 box, and I anticipate that it works on similar machines.)
+I may begin using pthreads, which would make the project Unix only. 
 
 **Requirements:**
 * [GLTools](https://github.com/HazimGazov/GLTools) [Unknown license]
@@ -15,11 +15,13 @@ Ubuntu 11.04 box, and I anticipate that it works on similar machines.)
 
 To run, `make project1 && ./project1`, and so forth.
 
-Python Sources
---------------
+Credits / notes
+---------------
 
-**IGNORE--I'm going to delete this.**
-* Requires _python-opengl_.
+I included some 3rd party libraries:
+* [Wavefront .obj loader](http://www.kixor.net/dev/objloader/) [public domain]
+* [stb_image](http://nothings.org/stb_image.c) [public domain]
 
-To run, `python main.py`, etc.
+Project 2 loads several models extracted by Alec Pike, Zerox et al. from
+Nintendo 64 videogames. Those assets are not included in this repository.
 
