@@ -10,6 +10,7 @@ require changes in order to build on other systems.
 I may begin using pthreads, which would make the project Unix only. 
 
 **Requirements:**
+
 * [GLTools](https://github.com/HazimGazov/GLTools) [Unknown license]
 * [lib3ds](http://code.google.com/p/lib3ds/) [LGPL]
 
@@ -19,6 +20,7 @@ Credits / notes
 ---------------
 
 I included some 3rd party libraries:
+
 * [Wavefront .obj loader](http://www.kixor.net/dev/objloader/) [public domain]
 * [stb_image](http://nothings.org/stb_image.c) [public domain]
 
