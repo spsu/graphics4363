@@ -1,6 +1,5 @@
 Graphics I 
 ==========
-
 This constitutes project work from Graphics I.
 
 The code was written in a Unix environment. The code _probably_ compiles
@@ -9,8 +8,8 @@ require changes in order to build on other systems.
 
 I may begin using pthreads, which would make the project Unix only. 
 
-**Requirements:**
-
+Requirements
+------------
 * [GLTools](https://github.com/HazimGazov/GLTools) [Unknown license]
 * [lib3ds](http://code.google.com/p/lib3ds/) [LGPL]
 
@@ -18,7 +17,6 @@ To run, `make project1 && ./project1`, and so forth.
 
 Credits / notes
 ---------------
-
 I included some 3rd party libraries:
 
 * [Wavefront .obj loader](http://www.kixor.net/dev/objloader/) [public domain]
