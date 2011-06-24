@@ -115,10 +115,6 @@ void setup()
 	// XXX: Trying  http://code.google.com/p/lib3ds/
 	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
 
-
-
-
-
 	Lib3dsLoader* loader = new Lib3dsLoader("assets/ocarina/masksalesman.3ds");
 	int faces = 0;
 
@@ -129,9 +125,7 @@ void setup()
 
 	vao1 = loader->buildVao();
 	vao1->loadTexture("assets/ocarina/HappyMas.bmp");
-
-
-
+	//vao1->loadTexture("assets/superman2.bmp");
 
 	// Create VAO. 
 	/*vao1 = new VertexArray();

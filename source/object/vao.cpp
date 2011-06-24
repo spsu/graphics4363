@@ -2,6 +2,7 @@
 #include "../shaderlib/registry.hpp"
 #include "../libs/math.hpp"
 #include "../libs/image.hpp"
+#include "../3rdparty/stb_image.h"
 #include "TransformationStack.hpp"
 #include "TransformationStackRegistry.hpp"
 #include <stdio.h>
@@ -201,46 +202,39 @@ void VertexArray::loadTexture(std::string filename)
 	int width = 0;
 	int height = 0;
 	int size = 0;
+	int channels = 0;
 	unsigned char* pixData = 0;
 	unsigned char* pixData2 = 0;
 
 	glBindTexture(GL_TEXTURE_2D, textureId);
 
-	// Read image data
-	// XXX/FIXME/FIXME: 
-	// This is stupidly inefficient: glTexImage2d needs 
-	// contiguous memory for the pixel data, but we can't get that on
-	// the first read. We have to know the file dimensions in order 
-	// to allocate the image memory, so we must do a second read after
-	// we have that information. 
-	loadBitmap(filename, &width, &height, &size, &pixData);
+	pixData = stbi_load(filename.c_str(), &width, &height, &channels, 4);
 
-	pixData2 = (unsigned char*) malloc(1024 * 1024 * 3);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 
+					0, GL_RGBA, GL_UNSIGNED_BYTE, pixData);
 
-	loadBitmap(filename, &width, &height, &size, &pixData2);
-	// TODO: Setup
-	// XXX: '3' might be wrong. It is the internalFormat. 
-	// TODO: Make sure I understand all of this correctly.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, width, height, 0, 
-			GL_RGB, GL_UNSIGNED_BYTE, &pixData);
+	stbi_image_free(pixData);
 
 	// Set wrapping and filtering modes
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // GL_MIRRORED_REPEAT
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 
 	// TODO: CLEANUP on delete VAO:, glDeleteTextures(TEXTURE_COUNT, textures)
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// XXX: I don't understand this... 
-	glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE0);
 	loc = glGetUniformLocation(Registry::getProgramId(), "texture");
+
+	// Bind to texture 0
 	glUniform1i(loc, 0);
 
-	glEnableVertexAttribArray(loc);
+	//glEnableVertexAttribArray(loc);
+	// XXX: ????
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void VertexArray::rotate(GLfloat x, GLfloat y, GLfloat z)

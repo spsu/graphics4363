@@ -1,0 +1,7 @@
+#ifndef BT_GRAPHICS_3RDPARTY_STBIMAGE
+#define BT_GRAPHICS_3RDPARTY_STBIMAGE
+
+#define STBI_HEADER_FILE_ONLY
+#include "stb_image.c"
+
+#endif

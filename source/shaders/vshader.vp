@@ -4,8 +4,8 @@ in vec4 vPosition;		// This will be referenced in your OpenGL program!!
 in vec3 vNormal;
 in vec3 vTexture;		// XXX: I think this is correct.
 
-in vec3 vTextureCoord;		// In from OpenGL
-out vec3 texCoord;		// Going out to the shader
+in vec2 vTextureCoord;		// In from OpenGL
+out vec2 texCoord;		// Going out to the shader
 
 //uniform vec4 vColor;	// Coming in from your OpenGL program
 //in vec4 vColor; 		// TODO: TEMP
@@ -31,8 +31,6 @@ void main()
 	vec3 N = normalize(vNormal);
 	color = diffuseColor * max(0.2f, dot(N, L));
 
-	//color = vColor;
-	//gl_Position = vPosition;
+	// Texture coordinates
 	texCoord = vTextureCoord;
 }
-

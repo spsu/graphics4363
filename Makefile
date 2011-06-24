@@ -60,6 +60,7 @@ two: source/project2.cpp required
 		build/libs/*.o \
 		build/shaderlib/*.o \
 		build/object/*.o \
+		build/3rdparty/*.o \
 		build/loader/*.o -o two 
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
@@ -74,6 +75,7 @@ required: \
 # ==========================================================
 
 build/libs: \
+	build/3rdparty/stb_image.o \
 	build/libs/math.o \
 	build/libs/file.o \
 	build/libs/vertex.o \
@@ -87,6 +89,10 @@ build/libs: \
 	build/shaderlib/registry.o \
 	build/loader.o
 		@$(CD) . 
+
+build/3rdparty/stb_image.o: source/3rdparty/stb_image.h source/3rdparty/stb_image.c
+	@echo "[compile] 3rd party stb_image lib"
+	@$(CD) ./build/3rdparty && $(C) $(INC) -c ../../source/3rdparty/stb_image.c
 
 build/libs/file.o: source/libs/file.hpp source/libs/file.cpp
 	@echo "[compile] file lib"
