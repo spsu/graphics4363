@@ -96,11 +96,18 @@ KixorObjectLoader* hmsLoader = 0;
  * 3D Studio Models.
  * A pair of strings: Model file, texture file.
  */
-map<string, pair<string, string> > models;
+typedef map<string, pair<string, string> > ModelFileMap;
+ModelFileMap models;
 
+/**
+ * Map of VAOs. 
+ * TODO: Enable copying of objects for easy propagation. 
+ */
+map<string, VertexArray*> V;
 
 void setup()
 {
+	// Characters
 	models["masksalesman"] = make_pair(
 			"assets/nintendo/masksalesman.3ds",
 			"assets/nintendo/HappyMas.bmp"
@@ -113,7 +120,16 @@ void setup()
 			"assets/nintendo/whomp.3ds",
 			"assets/nintendo/Whomp_gr.bmp"
 		);
-							
+
+	// Levels
+	models["hyrule"] = make_pair(
+			"assets/nintendo/levels/hyrule.3ds",
+			"assets/nintendo/levels/hyrule.png"
+		);
+	models["kokiri"] = make_pair(
+			"assets/nintendo/levels/kokiri.3ds",
+			"assets/nintendo/levels/kokiri.png"
+		);
 
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
@@ -149,7 +165,7 @@ void setup()
 	// XXX: Trying  http://code.google.com/p/lib3ds/
 	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
 
-	Lib3dsLoader* loader = 0;
+	/*Lib3dsLoader* loader = 0;
 	
 	loader = new Lib3dsLoader(models["luigi"].first);
 	vao1 = loader->buildVao();
@@ -167,12 +183,21 @@ void setup()
 	delete loader;
 
 	loader = new Lib3dsLoader("assets/nintendo/levels/hyrule.3ds");
-	vao4 = loader->buildVao();
-	vao4->loadTexture("assets/nintendo/levels/hyrule.png");
-	delete loader;
+	V["hyrule"] = loader->buildVao();
+	V["hyrule"]->loadTexture("assets/nintendo/levels/hyrule.png");
+	delete loader;*/
 
+	// Load all of the models above.
+	for(ModelFileMap::const_iterator i = models.begin(); i != models.end(); i++)
+	{
+		string name = i->first;
+		string modFile = i->second.first;
+		string texFile = i->second.second;
 
-
+		Lib3dsLoader loader = Lib3dsLoader(modFile);
+		V[name] = loader.buildVao();
+		V[name]->loadTexture(texFile);
+	}
 
 	// Create VAO. 
 	/*vao1 = new VertexArray();
@@ -247,21 +272,23 @@ void render(void)
 
 	transformStack->applyTransform();
 
-	vao1->translate(2.0f, 0.0f, 0.0f);
+	//vao1->translate(2.0f, 0.0f, 0.0f);
 	//vao1->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
 
-	vao2->translate(-3.0f, 0.0f, 0.0f);
+	//vao2->translate(-3.0f, 0.0f, 0.0f);
 	//vao2->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
 	//vao1->scale(0.7f, 0.3f, 0.5f);
 
-	vao3->scale(1000.0, 1000.0, 1000.0);
-	vao3->rotate(1.50f, 0.0f, 0.0f);
+	V["kokiri"]->scale(1000.0, 1000.0, 1000.0);
+	V["kokiri"]->rotate(1.50f, 0.7f, 0.0f);
+	V["kokiri"]->translate(4000.0f, -270.0f, -2000.0f);
 
-	
-	vao4->scale(1000.0, 1000.0, 1000.0);
+	V["hyrule"]->scale(1000.0, 1000.0, 1000.0);
+	V["hyrule"]->rotate(1.50f, 0.0f, 0.0f);
+	V["hyrule"]->translate(-2000.0f, -270.0f, -2500.0f);
+
 	//vao4->rotate(1.5f, 0.0f, 0.0f);
 	//transformStack->rotate(1.5f, 0.0f, 0.0f); // XXX: Hyrule
-
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -273,8 +300,8 @@ void render(void)
 
 	//vao1->draw();
 	//vao2->draw();
-	vao3->draw();
-	//vao4->draw();
+	V["kokiri"]->draw();
+	V["hyrule"]->draw();
 
 	transformStack->pop();
 	transformStack->pop();
