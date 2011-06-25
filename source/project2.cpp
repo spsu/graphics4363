@@ -14,6 +14,7 @@
 #include <map>
 #include <utility>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -31,6 +32,8 @@ using namespace std;
 
 const string FRAGMENT_SHADER = "./source/shaders/fshader.fp";
 const string VERTEX_SHADER = "./source/shaders/vshader.vp";
+
+const float PI = atan(1) * 4;
 
 VertexArray* vao1 = 0;
 VertexArray* vao2 = 0;
@@ -138,7 +141,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 4000.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 20000.0f);
 
 	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -180,11 +183,7 @@ void setup()
 	TransformationStack* transformStack = TransformationStackRegistry::get();
 	transformStack->translate(0.0f, 0.0f, 0.0f);
 	//transformStack->rotate(xRotCount, yRotCount, zRotCount);
-	transformStack->rotate(1.5f, yRotCount, zRotCount); // XXX: Hyrule
-
-
-	printf("%f, %f, %f\n", xRotCount, yRotCount, zRotCount);
-
+	//transformStack->rotate(1.5f, 0.0f, 0.0f); // XXX: Hyrule
 	transformStack->applyTransform();
 }
 
@@ -236,7 +235,7 @@ void render(void)
 	}
 
 	transformStack->push();
-	transformStack->rotate(0.0f, 0.0f, camRotZ);
+	transformStack->rotate(0.0f, camRotZ, 0.0f);
 	transformStack->applyTransform();
 
 	transformStack->push();
@@ -256,10 +255,13 @@ void render(void)
 	//vao1->scale(0.7f, 0.3f, 0.5f);
 
 	vao3->scale(1000.0, 1000.0, 1000.0);
-	//vao3->rotate(1.50f, 0.0f, 0.0f);
+	vao3->rotate(1.50f, 0.0f, 0.0f);
 
 	
 	vao4->scale(1000.0, 1000.0, 1000.0);
+	//vao4->rotate(1.5f, 0.0f, 0.0f);
+	//transformStack->rotate(1.5f, 0.0f, 0.0f); // XXX: Hyrule
+
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -284,44 +286,46 @@ void render(void)
 
 void keypress(unsigned char key, int x, int y)
 {
+	float rotAngle = (camRotZ / 180 * PI);
+	float cosRot = cos(camRotZ);
+	float sinRot = sin(camRotZ);
+
+	printf("Rotation Angle: %f\n", camRotZ);
+	printf("sin: %f\n", sinRot);
+	printf("cos: %f\n", cosRot);
+
 	switch (key) {
 		case 'q':
 			exit(1);
 			break;
 
-		// Translate
+		// Translate -- This took me forever to figure out!
 		case 'w': 
-			zTrans += 20.0f;
+			zTrans += cos(camRotZ) * 20;
+			xTrans += sin(camRotZ) * 20;
 			break;
+
 		case 'a':
-			xTrans += 20.0f;
+			xTrans += cos(camRotZ) * 20;
+			zTrans -= sin(camRotZ) * 20;
 			break;
+
 		case 's':
-			zTrans -= 20.0f;
+			zTrans -= cos(camRotZ) * 20;
+			xTrans -= sin(camRotZ) * 20;
 			break;
 		case 'd':
-			xTrans -= 20.0f;
+			xTrans -= cos(camRotZ) * 20;
+			zTrans += sin(camRotZ) * 20;
 			break;
+		
+		// Just in case...
 		case 'e': 
 			yTrans += 20.0f;
 			break;
 		case 'r':
 			yTrans -= 20.0f;
 			break;
-
-		case 'z':
-			zTrans -= 0.05f;
-			break;
-		case 'x':
-			zTrans += 0.05f;
-			break;
-		case 'c':
-			zTrans -= 5.0f;
-			break;
-		case 'v':
-			zTrans += 5.0f;
-			break;
-
 
 		// Rotate
 		case 'y':
@@ -330,7 +334,7 @@ void keypress(unsigned char key, int x, int y)
 			break;
 		case 'u':
 			yRot = !yRot; 
-			//yRotCount += 0.1f;
+			yRotCount += 0.1f;
 			break;
 		case 'i':
 			zRot = !zRot;
@@ -367,12 +371,11 @@ void mouseMotion(int x, int y)
 	int deltaX = x - oldX;
 	int deltaY = x - oldY;
 
-	printf("New: %d x %d\n", x, y);
-	printf("Old: %d x %d\n", oldX, oldY);
-	printf("Delta: %d x %d\n\n", deltaX, deltaY);
-
+	//printf("deltaX: %d\n", deltaX);
 	camRotZ = - (float)deltaY / 100.0f;
 	//yRotCount = - (float)deltaY / 100.0f;
+	//printf("MouseX: %f, sin(x): %f, cos(x): %f\n", deltaX, sin(x), cos(x));
+	//printf("MouseX: %f, sin(x): %f, cos(x): %f\n", deltaX, sin(x), cos(x));
 
 	oldX = x;
 	oldY = y;
