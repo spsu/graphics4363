@@ -187,7 +187,10 @@ void VertexArray::loadTextureCoords(Lib3dsTexel* texCoords, int numFaces)
 
 	loc = glGetAttribLocation(Registry::getProgramId(), "vTextureCoord");
 	glEnableVertexAttribArray(loc);
+
 	glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 
 	// Associate vertices with currently bound buffer.
 	// index, numComponents, type, doNormalization, stride, first item ptr
@@ -195,7 +198,6 @@ void VertexArray::loadTextureCoords(Lib3dsTexel* texCoords, int numFaces)
 	//glTexCoordPointer(2, GL_FLOAT, 0, NULL); // XXX XXX FIXME: Is this right?
 }
 
-// TODO TODO TODO TODO
 void VertexArray::loadTexture(std::string filename)
 {
 	GLuint loc(0);
@@ -208,18 +210,20 @@ void VertexArray::loadTexture(std::string filename)
 
 	glBindTexture(GL_TEXTURE_2D, textureId);
 
+	// Set wrapping and filtering modes
+	// XXX: Try other parameter options. 
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
 	pixData = stbi_load(filename.c_str(), &width, &height, &channels, 4);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 
 					0, GL_RGBA, GL_UNSIGNED_BYTE, pixData);
 
 	stbi_image_free(pixData);
-
-	// Set wrapping and filtering modes
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // GL_MIRRORED_REPEAT
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// TODO: CLEANUP on delete VAO:, glDeleteTextures(TEXTURE_COUNT, textures)
 

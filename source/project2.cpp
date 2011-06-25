@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <map>
+#include <utility>
 #include <iostream>
 
 using namespace std;
@@ -61,6 +63,12 @@ bool directionRight = true;
 GLfloat xTrans = 0.0f;
 GLfloat yTrans = 0.0f;
 GLfloat zTrans = 0.0f;
+GLfloat xRotMain = 0.0f;
+GLfloat yRotMain = 0.0f;
+GLfloat zRotMain = 0.0f;
+GLfloat xRotCount = 0.0f;
+GLfloat yRotCount = 0.0f;
+GLfloat zRotCount = 0.0f;
 
 bool xRot = false;
 bool yRot = false;
@@ -70,6 +78,9 @@ GLfloat xRotCounter = 0.0f;
 GLfloat yRotCounter = 0.0f;
 GLfloat zRotCounter = 0.0f;
 
+// Camera movement
+GLfloat camRotZ = 0.0f;
+
 GLuint lightLoc(0);
 GLuint dcLoc(0);
 
@@ -78,18 +89,38 @@ KixorObjectLoader* torusLoader= 0;
 KixorObjectLoader* cubeLoader = 0;    
 KixorObjectLoader* hmsLoader = 0;    
 
+/**
+ * 3D Studio Models.
+ * A pair of strings: Model file, texture file.
+ */
+map<string, pair<string, string> > models;
+
+
 void setup()
 {
+	models["masksalesman"] = make_pair(
+			"assets/nintendo/masksalesman.3ds",
+			"assets/nintendo/HappyMas.bmp"
+		);
+	models["luigi"] = make_pair(
+			"assets/nintendo/luigi.3ds",
+			"assets/nintendo/luigi_gr.bmp"
+		);
+	models["whomp"] = make_pair(
+			"assets/nintendo/whomp.3ds",
+			"assets/nintendo/Whomp_gr.bmp"
+		);
+							
+
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
 	// Use shader
 	glUseProgram(pId);
 
-	// Backface culling, depth test, texture support 
+	// Backface culling, depth test
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
 
 	// XXX: Init matrices
 	mRot = new GLfloat[16];
@@ -107,7 +138,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 1000.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 4000.0f);
 
 	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -115,17 +146,30 @@ void setup()
 	// XXX: Trying  http://code.google.com/p/lib3ds/
 	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
 
-	Lib3dsLoader* loader = new Lib3dsLoader("assets/ocarina/masksalesman.3ds");
-	int faces = 0;
-
-	faces = loader->getNumFaces();
-
-	printf("\n\nNum faces in 3ds model: %d\n\n", faces);
-
-
+	Lib3dsLoader* loader = 0;
+	
+	loader = new Lib3dsLoader(models["luigi"].first);
 	vao1 = loader->buildVao();
-	vao1->loadTexture("assets/ocarina/HappyMas.bmp");
-	//vao1->loadTexture("assets/superman2.bmp");
+	vao1->loadTexture(models["luigi"].second);
+	delete loader;
+
+	loader = new Lib3dsLoader("assets/nintendo/whomp.3ds");
+	vao2 = loader->buildVao();
+	vao2->loadTexture("assets/nintendo/Whomp_gr.bmp");
+	delete loader;
+
+	loader = new Lib3dsLoader("assets/nintendo/levels/kokiri.3ds");
+	vao3 = loader->buildVao();
+	vao3->loadTexture("assets/nintendo/levels/kokiri.png");
+	delete loader;
+
+	loader = new Lib3dsLoader("assets/nintendo/levels/hyrule.3ds");
+	vao4 = loader->buildVao();
+	vao4->loadTexture("assets/nintendo/levels/hyrule.png");
+	delete loader;
+
+
+
 
 	// Create VAO. 
 	/*vao1 = new VertexArray();
@@ -134,7 +178,13 @@ void setup()
 
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
-	transformStack->translate(0.0f, 0.0f, -300.0f);
+	transformStack->translate(0.0f, 0.0f, 0.0f);
+	//transformStack->rotate(xRotCount, yRotCount, zRotCount);
+	transformStack->rotate(1.5f, yRotCount, zRotCount); // XXX: Hyrule
+
+
+	printf("%f, %f, %f\n", xRotCount, yRotCount, zRotCount);
+
 	transformStack->applyTransform();
 }
 
@@ -166,7 +216,7 @@ void render(void)
 
 	// XXX: Lighting
 	GLfloat lightPos[] = { counter3, counter3, 100.0f };
-	GLfloat diffuseColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	GLfloat diffuseColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	glUniform3fv(lightLoc, 1, lightPos);
 	glUniform4fv(dcLoc, 1, diffuseColor);
@@ -179,20 +229,37 @@ void render(void)
 		xRotCounter += 0.05f;
 	}
 	if(yRot) {
-		yRotCounter += 0.05f;
+		yRotCounter += 0.02f;
 	}
 	if(zRot) {
 		zRotCounter += 0.05f;
 	}
 
 	transformStack->push();
+	transformStack->rotate(0.0f, 0.0f, camRotZ);
+	transformStack->applyTransform();
+
+	transformStack->push();
 	transformStack->translate(xTrans, yTrans, zTrans);
 	//transformStack->rotate(xRotCounter, yRotCounter, zRotCounter);
+
+	//printf("Translate: %f, %f, %f\n", xTrans, yTrans, zTrans);
+	//printf("Rotate: %f, %f, %f\n", xRotCount, yRotCount, zRotCount);
+
 	transformStack->applyTransform();
 
 	vao1->translate(2.0f, 0.0f, 0.0f);
-	vao1->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
+	//vao1->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
+
+	vao2->translate(-3.0f, 0.0f, 0.0f);
+	//vao2->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
 	//vao1->scale(0.7f, 0.3f, 0.5f);
+
+	vao3->scale(1000.0, 1000.0, 1000.0);
+	//vao3->rotate(1.50f, 0.0f, 0.0f);
+
+	
+	vao4->scale(1000.0, 1000.0, 1000.0);
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -202,8 +269,12 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	vao1->draw();
+	//vao1->draw();
+	//vao2->draw();
+	vao3->draw();
+	//vao4->draw();
 
+	transformStack->pop();
 	transformStack->pop();
 
 	// Double buffering -- swap current buffer.
@@ -220,29 +291,22 @@ void keypress(unsigned char key, int x, int y)
 
 		// Translate
 		case 'w': 
-			yTrans += 0.01f;
+			zTrans += 20.0f;
+			break;
+		case 'a':
+			xTrans += 20.0f;
 			break;
 		case 's':
-			yTrans -= 0.01f;
-			break;
-		case 'r': 
-			yTrans += 5.0f;
-			break;
-		case 't':
-			yTrans -= 5.0f;
-			break;
-
-		case 'a':
-			xTrans -= 0.01f;
+			zTrans -= 20.0f;
 			break;
 		case 'd':
-			xTrans += 0.01f;
+			xTrans -= 20.0f;
 			break;
-		case 'f':
-			xTrans -= 5.0f;
+		case 'e': 
+			yTrans += 20.0f;
 			break;
-		case 'g':
-			xTrans += 5.0f;
+		case 'r':
+			yTrans -= 20.0f;
 			break;
 
 		case 'z':
@@ -262,14 +326,56 @@ void keypress(unsigned char key, int x, int y)
 		// Rotate
 		case 'y':
 			xRot = !xRot;
+			xRotCount += 0.1f;
 			break;
 		case 'u':
 			yRot = !yRot; 
+			//yRotCount += 0.1f;
 			break;
 		case 'i':
 			zRot = !zRot;
+			zRotCount += 0.1f;
 			break;
 	}
+}
+
+void mouseButton(int button, int state, int x, int y)
+{
+	switch(button)
+	{
+		case GLUT_LEFT_BUTTON:
+		case GLUT_RIGHT_BUTTON:
+			// Fallthrough. Nothing for now.
+			break;
+	}
+}
+
+
+// This code is adapted from GLUT lab. 
+void mouseMotion(int x, int y)
+{
+	static bool firstCall= true;
+	static int oldX = 0;
+	static int oldY = 0;
+
+	if(firstCall) {
+		oldX = x;
+		oldY = y;
+		firstCall = false;
+	}
+
+	int deltaX = x - oldX;
+	int deltaY = x - oldY;
+
+	printf("New: %d x %d\n", x, y);
+	printf("Old: %d x %d\n", oldX, oldY);
+	printf("Delta: %d x %d\n\n", deltaX, deltaY);
+
+	camRotZ = - (float)deltaY / 100.0f;
+	//yRotCount = - (float)deltaY / 100.0f;
+
+	oldX = x;
+	oldY = y;
 }
 
 int main(int argc, char** argv)
@@ -291,8 +397,11 @@ int main(int argc, char** argv)
 	glutReshapeFunc(resizeCb);
 	glutDisplayFunc(render);
 	glutKeyboardFunc(keypress);
+	glutMotionFunc(mouseMotion);
+	glutMouseFunc(mouseButton);
 
 	setup();
+	//glutFullScreen();
 	glutMainLoop();
 
 	return 0;
