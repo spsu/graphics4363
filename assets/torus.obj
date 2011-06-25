@@ -1,5 +1,5 @@
 # Exported from Wings 3D 1.2
-mtllib torus.mtl
+mtllib assets/torus.mtl
 o torus1
 #128 vertices, 128 faces
 v 1.66421356 0.0000000e+0 0.0000000e+0

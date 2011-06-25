@@ -39,11 +39,6 @@ const float PI = atan(1) * 4;
 GLint pId = 0;
 
 // Matrices
-GLfloat* mRot;
-GLfloat* mRotMid;
-GLfloat* mRotX;
-GLfloat* mRotY;
-GLfloat* mRotZ;
 GLfloat* mScale;
 GLfloat* mTrans;
 GLfloat* mP;
@@ -78,8 +73,10 @@ GLfloat zRotCounter = 0.0f;
 // Can be used in a variety of mathematical functions.
 GLfloat timerFast = 0.0f;
 GLfloat timerSlow = 0.0f;
+GLfloat timerSuperSlow = 0.0f;
 GLfloat timerFastImmediateReset = 0.0f;
 GLfloat timerSlowImmediateReset = 0.0f;
+GLfloat timerSuperSlowImmediateReset = 0.0f;
 GLfloat timerFastSlowReset = 0.0f;
 
 // Camera movement
@@ -100,6 +97,8 @@ VertexArray* sphere = 0;
 
 // Forward declarations
 void incrementTimers();
+void drawArwing();
+void drawTorusTower(int num);
 
 /**
  * Map of VAOs. 
@@ -122,6 +121,18 @@ void setup()
 			"assets/nintendo/whomp.3ds",
 			"assets/nintendo/Whomp_gr.bmp"
 		);
+	models["dodongo"] = make_pair(
+			"assets/nintendo/dodongo.3ds",
+			"assets/nintendo/dodongo.png"
+		);
+	models["linkA"] = make_pair(
+			"assets/nintendo/linkA.3ds",
+			"assets/nintendo/linkA.png"
+		);
+	models["arwing"] = make_pair(
+			"assets/nintendo/arwing.3ds",
+			"assets/nintendo/arwing.png"
+		);
 
 	// Levels
 	models["hyrule"] = make_pair(
@@ -137,6 +148,11 @@ void setup()
 			"assets/nintendo/levels/hyruleca.bmp"
 		);
 
+	// Shape primitives
+	models["torus"] = make_pair(
+			"assets/torus.3ds",
+			""
+		);
 
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
@@ -147,12 +163,9 @@ void setup()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 
 	// XXX: Init matrices
-	mRot = new GLfloat[16];
-	mRotX = new GLfloat[16];
-	mRotY = new GLfloat[16];
-	mRotZ = new GLfloat[16];
 	mScale = new GLfloat[16];
 	mTrans = new GLfloat[16];
 	mP = new GLfloat[16];
@@ -164,7 +177,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.0f, 0.5f, 20000.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.77f, 0.5f, 20000.0f);
 
 	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -178,16 +191,10 @@ void setup()
 
 		Lib3dsLoader loader = Lib3dsLoader(modFile);
 		V[name] = loader.buildVao();
-		V[name]->loadTexture(texFile);
+		if(texFile.size()) {
+			V[name]->loadTexture(texFile);
+		}
 	}
-
-	// Older models.
-	KixorObjectLoader kLoader = KixorObjectLoader("assets/torus.obj");
-
-	sphere = new VertexArray();
-	sphere->loadVertices(kLoader.getVertices());
-	sphere->loadVertices(kLoader.getNormals());
-
 
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
@@ -247,18 +254,22 @@ void render(void)
 		zRotCounter += 0.05f;
 	}
 
+	// XXX: Camera Movement. 
 	transformStack->push();
 	transformStack->rotate(0.0f, camRotZ, 0.0f);
 	transformStack->applyTransform();
-
 	transformStack->push();
 	transformStack->translate(xTrans, yTrans, zTrans);
-	//transformStack->rotate(xRotCounter, yRotCounter, zRotCounter);
-
-	//printf("Translate: %f, %f, %f\n", xTrans, yTrans, zTrans);
-	//printf("Rotate: %f, %f, %f\n", xRotCount, yRotCount, zRotCount);
-
 	transformStack->applyTransform();
+
+	// Modelview Matrix
+	GLuint r = glGetUniformLocation(pId, "mv");
+	glUniformMatrix4fv(r, 1, GL_TRUE, transformStack->top());
+
+	// Perspective matrix
+	GLuint p = glGetUniformLocation(pId, "p");
+	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
+
 
 	//vao1->translate(2.0f, 0.0f, 0.0f);
 	//vao1->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
@@ -280,7 +291,6 @@ void render(void)
 	V["hcastle"]->rotate(1.50f, 0.0f, 0.0f);
 	V["hcastle"]->translate(-2200.0f, 500.0f, -8500.0f);
 
-
 	// XXX: Characters.
 	V["whomp"]->scale(80.0f);
 	V["whomp"]->rotate(1.50f, -1.9f, 0.0f);
@@ -290,13 +300,23 @@ void render(void)
 	V["luigi"]->rotate(1.50f, 1.0f, (timerFast/4)*0.2f);
 	V["luigi"]->translate(1000.0f, -150.0f, -2000.0f);
 
-	// Modelview Matrix
-	GLuint r = glGetUniformLocation(pId, "mv");
-	glUniformMatrix4fv(r, 1, GL_TRUE, transformStack->top());
+	V["dodongo"]->scale(10.7);
+	V["dodongo"]->rotate(1.50f, (timerSlow/4*0.7f), (timerFastSlowReset/4)*0.1f);
+	V["dodongo"]->translate(-1247.0f, -400.0f, -502.0f);
+	V["dodongo"]->draw();
 
-	// Perspective matrix
-	GLuint p = glGetUniformLocation(pId, "p");
-	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
+	V["linkA"]->scale(0.7);
+	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.1f);
+	V["linkA"]->translate(-847.0f, -170.0f, -5702.0f);
+	V["linkA"]->draw();
+
+	// Arwings have a flight pattern. 
+	V["arwing"]->scale(7.0f);
+	drawArwing();
+
+	// Shapes
+	V["torus"]->scale(300.0f);
+	drawTorusTower(4);
 
 	// Draw models.
 	V["kokiri"]->draw();
@@ -305,8 +325,7 @@ void render(void)
 	V["luigi"]->draw();
 	V["hcastle"]->draw();
 
-	// Older models.
-	sphere->draw();
+	printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
 
 	transformStack->pop();
 	transformStack->pop();
@@ -314,6 +333,46 @@ void render(void)
 	// Double buffering -- swap current buffer.
 	glutSwapBuffers();
 	glutPostRedisplay();
+}
+
+void drawArwing()
+{
+	static bool change = false;
+	
+	GLfloat rX = 0;
+	GLfloat rY = 0;
+	GLfloat rZ = 0;
+
+	GLfloat tx = 0;
+	GLfloat ty = 0;
+	GLfloat tz = 0; 
+	
+	tx = sin(timerSuperSlowImmediateReset*2*PI) * 7000;
+	tz = cos(timerSuperSlowImmediateReset*2*PI) * 10000;
+
+	// Keep facing forward
+	rY = -2 * PI * timerSuperSlowImmediateReset -PI / 2; 
+
+	V["arwing"]->rotate(1.50f + rX, 0.0f + rY, 0.0f + rZ);
+	V["arwing"]->translate(-850.0f + tx, 2000.0f + ty, -10700.0f + tz);
+	V["arwing"]->draw();
+}
+
+void drawTorusTower(int num)
+{
+	int sign = 1;
+	int xOffset = 0;
+	int yOffset = 0;
+	for(unsigned int i = 0; i < num; i++)
+	{
+		float x = timerSuperSlowImmediateReset*2*PI; 
+
+		V["torus"]->rotate(PI/(4-2*x)*sign, timerSlowImmediateReset*2*PI, 0);
+		V["torus"]->translate(-4270.0f, 360.0f + yOffset, -2200.0f);
+		V["torus"]->draw();
+		sign *= -1;
+		yOffset += 620 + timerSlow*2*PI*-50;
+	}
 }
 
 void keypress(unsigned char key, int x, int y)
@@ -350,6 +409,14 @@ void keypress(unsigned char key, int x, int y)
 		case 'i':
 			yTrans -= 20.0f;
 			break;
+			
+		// Reset position.
+		case 'p': 
+			yTrans = 0.0f;
+			xTrans = 0.0f;
+			zTrans = 0.0f;
+			camRotZ = 0.0f;
+			break;
 	}
 }
 
@@ -378,7 +445,7 @@ void mouseMotion(int x, int y)
 		firstCall = false;
 	}
 
-	int deltaX = x - oldX;
+	//int deltaX = x - oldX;
 	int deltaY = x - oldY;
 
 	// Set the camera rotation. 
@@ -393,13 +460,16 @@ void incrementTimers()
 {
 	const float FAST = 0.1f;
 	const float SLOW = 0.01f;
+	const float SUPER_SLOW = 0.002f;
 
 	static bool tFastD = true;
 	static bool tSlowD = true;
+	static bool tSuperSlowD = true;
 	static bool tFastSlowD = true;
 
 	timerFastImmediateReset += FAST;
 	timerSlowImmediateReset += SLOW;
+	timerSuperSlowImmediateReset += SUPER_SLOW;
 	
 	if(timerFastImmediateReset >= 1.0f) {
 		timerFastImmediateReset = 0.0f;
@@ -407,6 +477,10 @@ void incrementTimers()
 
 	if(timerSlowImmediateReset >= 1.0f) {
 		timerSlowImmediateReset = 0.0f;
+	}
+
+	if(timerSuperSlowImmediateReset >= 1.0f) {
+		timerSuperSlowImmediateReset = 0.0f;
 	}
 
 	if(tFastD) {
@@ -434,7 +508,18 @@ void incrementTimers()
 			tSlowD = true;
 		}
 	}
-
+	if(tSuperSlowD) {
+		timerSuperSlow += SUPER_SLOW;
+		if(timerSuperSlow > 1.0f) {
+			tSuperSlowD = false;
+		}
+	}
+	else {
+		timerSuperSlow -= SUPER_SLOW;
+		if(timerSuperSlow < 0.0f) {
+			tSuperSlowD = true;
+		}
+	}
 	if(tFastSlowD) {
 		timerFastSlowReset += FAST;
 		if(timerFastSlowReset > 1.0f) {
@@ -453,8 +538,8 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
-	glutInitWindowSize(800, 600);
+	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_MULTISAMPLE);
+	glutInitWindowSize(1020, 600);
 	glutCreateWindow ("Project 2");
 
 	// Intitalize driver
