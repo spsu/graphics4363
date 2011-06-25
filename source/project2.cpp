@@ -35,14 +35,6 @@ const string VERTEX_SHADER = "./source/shaders/vshader.vp";
 
 const float PI = atan(1) * 4;
 
-VertexArray* vao1 = 0;
-VertexArray* vao2 = 0;
-VertexArray* vao3 = 0;
-VertexArray* vao4 = 0;
-VertexArray* vao5 = 0;
-VertexArray* vao6 = 0;
-VertexArray* vao7 = 0;
-
 // Program ID
 GLint pId = 0;
 
@@ -81,16 +73,20 @@ GLfloat xRotCounter = 0.0f;
 GLfloat yRotCounter = 0.0f;
 GLfloat zRotCounter = 0.0f;
 
+// Timer counters. 
+// Increment from 0 to 1 at different speeds. 
+// Can be used in a variety of mathematical functions.
+GLfloat timerFast = 0.0f;
+GLfloat timerSlow = 0.0f;
+GLfloat timerFastImmediateReset = 0.0f;
+GLfloat timerSlowImmediateReset = 0.0f;
+GLfloat timerFastSlowReset = 0.0f;
+
 // Camera movement
 GLfloat camRotZ = 0.0f;
 
 GLuint lightLoc(0);
 GLuint dcLoc(0);
-
-KixorObjectLoader* sphereLoader = 0;    
-KixorObjectLoader* torusLoader= 0;    
-KixorObjectLoader* cubeLoader = 0;    
-KixorObjectLoader* hmsLoader = 0;    
 
 /**
  * 3D Studio Models.
@@ -98,6 +94,12 @@ KixorObjectLoader* hmsLoader = 0;
  */
 typedef map<string, pair<string, string> > ModelFileMap;
 ModelFileMap models;
+
+// Older models.
+VertexArray* sphere = 0;
+
+// Forward declarations
+void incrementTimers();
 
 /**
  * Map of VAOs. 
@@ -130,6 +132,11 @@ void setup()
 			"assets/nintendo/levels/kokiri.3ds",
 			"assets/nintendo/levels/kokiri.png"
 		);
+	models["hcastle"] = make_pair(
+			"assets/nintendo/levels/hyrulecastle.3ds",
+			"assets/nintendo/levels/hyruleca.bmp"
+		);
+
 
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
@@ -162,31 +169,6 @@ void setup()
 	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// XXX: Trying  http://code.google.com/p/lib3ds/
-	//hmsLoader = new KixorObjectLoader("assets/ocarina/untitled.obj");
-
-	/*Lib3dsLoader* loader = 0;
-	
-	loader = new Lib3dsLoader(models["luigi"].first);
-	vao1 = loader->buildVao();
-	vao1->loadTexture(models["luigi"].second);
-	delete loader;
-
-	loader = new Lib3dsLoader("assets/nintendo/whomp.3ds");
-	vao2 = loader->buildVao();
-	vao2->loadTexture("assets/nintendo/Whomp_gr.bmp");
-	delete loader;
-
-	loader = new Lib3dsLoader("assets/nintendo/levels/kokiri.3ds");
-	vao3 = loader->buildVao();
-	vao3->loadTexture("assets/nintendo/levels/kokiri.png");
-	delete loader;
-
-	loader = new Lib3dsLoader("assets/nintendo/levels/hyrule.3ds");
-	V["hyrule"] = loader->buildVao();
-	V["hyrule"]->loadTexture("assets/nintendo/levels/hyrule.png");
-	delete loader;*/
-
 	// Load all of the models above.
 	for(ModelFileMap::const_iterator i = models.begin(); i != models.end(); i++)
 	{
@@ -199,10 +181,13 @@ void setup()
 		V[name]->loadTexture(texFile);
 	}
 
-	// Create VAO. 
-	/*vao1 = new VertexArray();
-	vao1->loadVertices(hmsLoader->getVertices());
-	vao1->loadNormals(hmsLoader->getNormals());*/
+	// Older models.
+	KixorObjectLoader kLoader = KixorObjectLoader("assets/torus.obj");
+
+	sphere = new VertexArray();
+	sphere->loadVertices(kLoader.getVertices());
+	sphere->loadVertices(kLoader.getNormals());
+
 
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
@@ -237,6 +222,9 @@ void render(void)
 	else {
 		counter3 -= 4.0f;
 	}
+
+	// Increment the timers this function uses. 
+	incrementTimers();
 
 	// XXX: Lighting
 	GLfloat lightPos[] = { counter3, counter3, 100.0f };
@@ -279,6 +267,7 @@ void render(void)
 	//vao2->rotate(20.0f + xRotCounter, 40.0f + yRotCounter, zRotCounter);
 	//vao1->scale(0.7f, 0.3f, 0.5f);
 
+	// XXX: Levels
 	V["kokiri"]->scale(1000.0, 1000.0, 1000.0);
 	V["kokiri"]->rotate(1.50f, 0.7f, 0.0f);
 	V["kokiri"]->translate(4000.0f, -270.0f, -2000.0f);
@@ -287,8 +276,19 @@ void render(void)
 	V["hyrule"]->rotate(1.50f, 0.0f, 0.0f);
 	V["hyrule"]->translate(-2000.0f, -270.0f, -2500.0f);
 
-	//vao4->rotate(1.5f, 0.0f, 0.0f);
-	//transformStack->rotate(1.5f, 0.0f, 0.0f); // XXX: Hyrule
+	V["hcastle"]->scale(1200.0);
+	V["hcastle"]->rotate(1.50f, 0.0f, 0.0f);
+	V["hcastle"]->translate(-2200.0f, 500.0f, -8500.0f);
+
+
+	// XXX: Characters.
+	V["whomp"]->scale(80.0f);
+	V["whomp"]->rotate(1.50f, -1.9f, 0.0f);
+	V["whomp"]->translate(-3000.0f, (timerSlow*300.0f)+200, -5800.0f);
+
+	V["luigi"]->scale(10.0f);
+	V["luigi"]->rotate(1.50f, 1.0f, (timerFast/4)*0.2f);
+	V["luigi"]->translate(1000.0f, -150.0f, -2000.0f);
 
 	// Modelview Matrix
 	GLuint r = glGetUniformLocation(pId, "mv");
@@ -298,10 +298,15 @@ void render(void)
 	GLuint p = glGetUniformLocation(pId, "p");
 	glUniformMatrix4fv(p, 1, GL_TRUE, mP);
 
-	//vao1->draw();
-	//vao2->draw();
+	// Draw models.
 	V["kokiri"]->draw();
 	V["hyrule"]->draw();
+	V["whomp"]->draw();
+	V["luigi"]->draw();
+	V["hcastle"]->draw();
+
+	// Older models.
+	sphere->draw();
 
 	transformStack->pop();
 	transformStack->pop();
@@ -313,14 +318,6 @@ void render(void)
 
 void keypress(unsigned char key, int x, int y)
 {
-	float rotAngle = (camRotZ / 180 * PI);
-	float cosRot = cos(camRotZ);
-	float sinRot = sin(camRotZ);
-
-	printf("Rotation Angle: %f\n", camRotZ);
-	printf("sin: %f\n", sinRot);
-	printf("cos: %f\n", cosRot);
-
 	switch (key) {
 		case 'q':
 			exit(1);
@@ -347,25 +344,11 @@ void keypress(unsigned char key, int x, int y)
 			break;
 		
 		// Just in case...
-		case 'e': 
+		case 'u': 
 			yTrans += 20.0f;
 			break;
-		case 'r':
-			yTrans -= 20.0f;
-			break;
-
-		// Rotate
-		case 'y':
-			xRot = !xRot;
-			xRotCount += 0.1f;
-			break;
-		case 'u':
-			yRot = !yRot; 
-			yRotCount += 0.1f;
-			break;
 		case 'i':
-			zRot = !zRot;
-			zRotCount += 0.1f;
+			yTrans -= 20.0f;
 			break;
 	}
 }
@@ -398,14 +381,72 @@ void mouseMotion(int x, int y)
 	int deltaX = x - oldX;
 	int deltaY = x - oldY;
 
-	//printf("deltaX: %d\n", deltaX);
+	// Set the camera rotation. 
 	camRotZ = - (float)deltaY / 100.0f;
-	//yRotCount = - (float)deltaY / 100.0f;
-	//printf("MouseX: %f, sin(x): %f, cos(x): %f\n", deltaX, sin(x), cos(x));
-	//printf("MouseX: %f, sin(x): %f, cos(x): %f\n", deltaX, sin(x), cos(x));
 
 	oldX = x;
 	oldY = y;
+}
+
+// TODO: This could all be replaced with a call to system time...
+void incrementTimers()
+{
+	const float FAST = 0.1f;
+	const float SLOW = 0.01f;
+
+	static bool tFastD = true;
+	static bool tSlowD = true;
+	static bool tFastSlowD = true;
+
+	timerFastImmediateReset += FAST;
+	timerSlowImmediateReset += SLOW;
+	
+	if(timerFastImmediateReset >= 1.0f) {
+		timerFastImmediateReset = 0.0f;
+	}
+
+	if(timerSlowImmediateReset >= 1.0f) {
+		timerSlowImmediateReset = 0.0f;
+	}
+
+	if(tFastD) {
+		timerFast += FAST;
+		if(timerFast > 1.0f) {
+			tFastD = false;
+		}
+	}
+	else {
+		timerFast -= FAST;
+		if(timerFast < 0.0f) {
+			tFastD = true;
+		}
+	}
+
+	if(tSlowD) {
+		timerSlow += SLOW;
+		if(timerSlow > 1.0f) {
+			tSlowD = false;
+		}
+	}
+	else {
+		timerSlow -= SLOW;
+		if(timerSlow < 0.0f) {
+			tSlowD = true;
+		}
+	}
+
+	if(tFastSlowD) {
+		timerFastSlowReset += FAST;
+		if(timerFastSlowReset > 1.0f) {
+			tFastSlowD = false;
+		}
+	}
+	else {
+		timerFastSlowReset -= SLOW;
+		if(timerFastSlowReset < 0.0f) {
+			tFastSlowD= true;
+		}
+	}
 }
 
 int main(int argc, char** argv)

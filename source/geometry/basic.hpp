@@ -57,6 +57,28 @@ const GLfloat LETTER_B[108] =
 		0.5f, -0.4f, 0.0f,
 };
 
+// XXX: This is awful!
+GLfloat* letterColors()
+{
+  	GLfloat* colors = new GLfloat[108];
+
+	// FIXME: No math in loop cond, lazy!
+	for(unsigned int i = 0; i < 36/3; i++) {
+		colors[9*i] = 0.0f;
+		colors[9*i+1] = 0.0f;
+		colors[9*i+2] = 0.7f;
+
+		colors[9*i+3] = 0.0f;
+		colors[9*i+4] = 0.0f;
+		colors[9*i+5] = 0.0f;
+
+		colors[9*i+6] = 0.1f;
+		colors[9*i+7] = 0.0f;
+		colors[9*i+8] = 0.2f;
+	}
+	return colors;
+};
+
 // Lazy vertex debug 
 void printVertices(vector<GLfloat> verts)
 {

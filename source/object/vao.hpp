@@ -87,6 +87,9 @@ class VertexArray
 		void scale(GLfloat x, GLfloat y, GLfloat z);
 		void translate(GLfloat x, GLfloat y, GLfloat z);
 
+		// Uniform scale on X, Y, and Z
+		void scale(GLfloat xyz);
+
 		/**
 		 * Draw.
 		 */

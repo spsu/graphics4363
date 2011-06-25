@@ -259,6 +259,13 @@ void VertexArray::translate(GLfloat x, GLfloat y, GLfloat z)
 	recalcMat = true;
 }
 
+void VertexArray::scale(GLfloat xyz)
+{
+	vScale = Vertex(xyz, xyz, xyz);
+	recalcMat = true;
+}
+
+
 void VertexArray::draw()
 {
 	// Graphics matrix stack pipeline.
