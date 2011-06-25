@@ -13,7 +13,8 @@ Requirements
 * [GLTools](https://github.com/HazimGazov/GLTools) [Unknown license]
 * [lib3ds](http://code.google.com/p/lib3ds/) [LGPL]
 
-To run, `make project1 && ./project1`, and so forth.
+To run, `make project1 && ./project1`, and `make two && ./two` and 
+so forth.
 
 Credits / notes
 ---------------
@@ -25,3 +26,10 @@ I included some 3rd party libraries:
 Project 2 loads several models extracted by Alec Pike, Zerox et al. from
 Nintendo 64 videogames. Those assets are not included in this repository.
 
+Texture/environment mapping credits:
+
+* [Jockum Skoglund](http://www.quake3world.com/forum/viewtopic.php?t=9242)
+  for /assets/skyboxes/zfight/.\*.[png|jpg|bmp]
+* [Unknown]() for /assets/skyboxes/unknown/.\*.[png|jpg|bmp]
+
+These files are also too large to keep here. I'll link to a tarfile.

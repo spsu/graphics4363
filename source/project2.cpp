@@ -80,7 +80,8 @@ GLfloat timerSuperSlowImmediateReset = 0.0f;
 GLfloat timerFastSlowReset = 0.0f;
 
 // Camera movement
-GLfloat camRotZ = 0.0f;
+GLfloat camRotX = 0.0f;
+GLfloat camRotY = 0.0f;
 
 GLuint lightLoc(0);
 GLuint dcLoc(0);
@@ -91,9 +92,6 @@ GLuint dcLoc(0);
  */
 typedef map<string, pair<string, string> > ModelFileMap;
 ModelFileMap models;
-
-// Older models.
-VertexArray* sphere = 0;
 
 // Forward declarations
 void incrementTimers();
@@ -133,6 +131,10 @@ void setup()
 			"assets/nintendo/arwing.3ds",
 			"assets/nintendo/arwing.png"
 		);
+	models["goomba"] = make_pair(
+			"assets/nintendo/goomba.3ds",
+			"assets/nintendo/goomba.png"
+		);
 
 	// Levels
 	models["hyrule"] = make_pair(
@@ -147,11 +149,35 @@ void setup()
 			"assets/nintendo/levels/hyrulecastle.3ds",
 			"assets/nintendo/levels/hyruleca.bmp"
 		);
+	models["peachcastle"] = make_pair(
+			"assets/nintendo/levels/peachcastle.3ds",
+			"assets/nintendo/levels/peachcastle.bmp"
+		);
+
+	// Skyboxes
+	/*models["lostvalley"] = make_pair(
+			"assets/skyboxes/lostvalley.3ds",
+			"assets/skyboxes/lostvalley.png"
+		);
+	models["grimm"] = make_pair(
+			"assets/skyboxes/zfight/grimm.3ds",
+			"assets/skyboxes/zfight/grimm.png"
+		);*/
+
+	/*models["interstellar"] = make_pair(
+			"assets/skyboxes/zfight/interstellar.3ds",
+			"assets/skyboxes/zfight/interstellar.png"
+		);*/
+
+	models["stormy"] = make_pair(
+			"assets/skyboxes/zfight/stormy.3ds",
+			"assets/skyboxes/zfight/stormy.png"
+		);
 
 	// Shape primitives
 	models["torus"] = make_pair(
 			"assets/torus.3ds",
-			""
+			"" // No texture
 		);
 
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
@@ -177,7 +203,7 @@ void setup()
 	dcLoc = glGetUniformLocation(pId, "diffuseColor");
 
 	// mat, fov, aspect, near, far
-	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.77f, 0.5f, 20000.0f);
+	math::makePerspectiveProjectionMatrix(mP, 60.0f, 1.77f, 0.5f, 200000.0f);
 
 	//glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -199,8 +225,6 @@ void setup()
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
 	transformStack->translate(0.0f, 0.0f, 0.0f);
-	//transformStack->rotate(xRotCount, yRotCount, zRotCount);
-	//transformStack->rotate(1.5f, 0.0f, 0.0f); // XXX: Hyrule
 	transformStack->applyTransform();
 }
 
@@ -216,7 +240,7 @@ void render(void)
 
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	// XXX: Moving lighting. 
+	// XXX: Moving lighting! Fun.
 	if(counter3 > 300.0f) {
 		directionRight = false;	
 	}
@@ -256,7 +280,7 @@ void render(void)
 
 	// XXX: Camera Movement. 
 	transformStack->push();
-	transformStack->rotate(0.0f, camRotZ, 0.0f);
+	transformStack->rotate(0.0f, camRotY, 0.0f);
 	transformStack->applyTransform();
 	transformStack->push();
 	transformStack->translate(xTrans, yTrans, zTrans);
@@ -291,6 +315,11 @@ void render(void)
 	V["hcastle"]->rotate(1.50f, 0.0f, 0.0f);
 	V["hcastle"]->translate(-2200.0f, 500.0f, -8500.0f);
 
+	// XXX: It has Z-fighting!!
+	V["peachcastle"]->scale(900.0);
+	V["peachcastle"]->rotate(1.50f, PI, 0.0f);
+	V["peachcastle"]->translate(2200.0f, -1200.0f, 0.0f);
+
 	// XXX: Characters.
 	V["whomp"]->scale(80.0f);
 	V["whomp"]->rotate(1.50f, -1.9f, 0.0f);
@@ -306,9 +335,24 @@ void render(void)
 	V["dodongo"]->draw();
 
 	V["linkA"]->scale(0.7);
-	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.1f);
+	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.3f);
 	V["linkA"]->translate(-847.0f, -170.0f, -5702.0f);
 	V["linkA"]->draw();
+
+	// Lots of goombas.
+	// TODO: Goombas rotate when you get close.
+	V["goomba"]->scale(6.0);
+	V["goomba"]->rotate(1.50f, 1.0f, (timerFast/4)*0.1f);
+	V["goomba"]->translate(438.0, -800.0, 3200.0);
+	V["goomba"]->draw();
+	V["goomba"]->translate(-1185.0, -180.0, -3107.0); // Ranch
+	V["goomba"]->draw();
+	V["goomba"]->rotate(1.50f, PI, (timerFast/4)*0.1f);
+	V["goomba"]->translate(864.0, -320.0, 6060.0); // Castle bridge
+	V["goomba"]->draw();
+	V["goomba"]->rotate(1.50f, timerSlowImmediateReset*2*PI, (timerFast/4)*0.1f);
+	V["goomba"]->translate(1700.0, -170.0, -4458.0); // Zora's domain
+	V["goomba"]->draw();
 
 	// Arwings have a flight pattern. 
 	V["arwing"]->scale(7.0f);
@@ -318,12 +362,19 @@ void render(void)
 	V["torus"]->scale(300.0f);
 	drawTorusTower(4);
 
+	// Skybox
+	V["stormy"]->rotate(1.50f, 0.0f, 0.0f);
+	V["stormy"]->translate(0.0f, 10000.0f, 0.0f);
+	V["stormy"]->scale(100000.0);
+	V["stormy"]->draw();
+
 	// Draw models.
 	V["kokiri"]->draw();
 	V["hyrule"]->draw();
 	V["whomp"]->draw();
 	V["luigi"]->draw();
 	V["hcastle"]->draw();
+	V["peachcastle"]->draw();
 
 	printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
 
@@ -384,22 +435,22 @@ void keypress(unsigned char key, int x, int y)
 
 		// Translate -- This took me forever to figure out!
 		case 'w': 
-			zTrans += cos(camRotZ) * 20;
-			xTrans += sin(camRotZ) * 20;
+			zTrans += cos(camRotY) * 20;
+			xTrans += sin(camRotY) * 20;
 			break;
 
 		case 'a':
-			xTrans += cos(camRotZ) * 20;
-			zTrans -= sin(camRotZ) * 20;
+			xTrans += cos(camRotY) * 20;
+			zTrans -= sin(camRotY) * 20;
 			break;
 
 		case 's':
-			zTrans -= cos(camRotZ) * 20;
-			xTrans -= sin(camRotZ) * 20;
+			zTrans -= cos(camRotY) * 20;
+			xTrans -= sin(camRotY) * 20;
 			break;
 		case 'd':
-			xTrans -= cos(camRotZ) * 20;
-			zTrans += sin(camRotZ) * 20;
+			xTrans -= cos(camRotY) * 20;
+			zTrans += sin(camRotY) * 20;
 			break;
 		
 		// Just in case...
@@ -415,7 +466,7 @@ void keypress(unsigned char key, int x, int y)
 			yTrans = 0.0f;
 			xTrans = 0.0f;
 			zTrans = 0.0f;
-			camRotZ = 0.0f;
+			camRotY = 0.0f;
 			break;
 	}
 }
@@ -449,7 +500,7 @@ void mouseMotion(int x, int y)
 	int deltaY = x - oldY;
 
 	// Set the camera rotation. 
-	camRotZ = - (float)deltaY / 100.0f;
+	camRotY = - (float)deltaY / 100.0f;
 
 	oldX = x;
 	oldY = y;
