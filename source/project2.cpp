@@ -103,7 +103,7 @@ ModelFileMap models;
 // Forward declarations
 void incrementTimers();
 void drawArwing();
-void drawTorusTower(int num);
+void drawTorusTower(unsigned int num);
 
 /**
  * Map of VAOs. 
@@ -478,8 +478,8 @@ void render(void)
 	V["peachcastle"]->draw();
 
 	//printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
-	printf("Object Position: %f, %f, %f [%f]\n", 
-			objMoveX, objMoveY, objMoveZ, objRotY);
+	//printf("Object Position: %f, %f, %f [%f]\n", 
+	//			objMoveX, objMoveY, objMoveZ, objRotY);
 
 	transformStack->pop();
 	transformStack->pop();
@@ -491,8 +491,6 @@ void render(void)
 
 void drawArwing()
 {
-	static bool change = false;
-	
 	GLfloat rX = 0;
 	GLfloat rY = 0;
 	GLfloat rZ = 0;
@@ -512,10 +510,9 @@ void drawArwing()
 	V["arwing"]->draw();
 }
 
-void drawTorusTower(int num)
+void drawTorusTower(unsigned int num)
 {
 	int sign = 1;
-	int xOffset = 0;
 	int yOffset = 0;
 	for(unsigned int i = 0; i < num; i++)
 	{

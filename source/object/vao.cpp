@@ -203,10 +203,8 @@ void VertexArray::loadTexture(std::string filename)
 	GLuint loc(0);
 	int width = 0;
 	int height = 0;
-	int size = 0;
 	int channels = 0;
 	unsigned char* pixData = 0;
-	unsigned char* pixData2 = 0;
 
 	glBindTexture(GL_TEXTURE_2D, textureId);
 
