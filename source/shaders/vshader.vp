@@ -29,7 +29,7 @@ void main()
 	// Lighting calculations
 	vec3 L = normalize(lightPos.xyz);
 	vec3 N = normalize(vNormal);
-	color = diffuseColor * max(0.0f, dot(N, L));
+	color = diffuseColor * max(0.1f, dot(N, L)) - 0.02f;
 
 	// Texture coordinates
 	texCoord = vTextureCoord;

@@ -266,6 +266,11 @@ void VertexArray::scale(GLfloat xyz)
 }
 
 
+void VertexArray::setPrimitiveMode(GLuint pMode)
+{
+	primitiveMode = pMode;
+}
+
 void VertexArray::draw()
 {
 	// Graphics matrix stack pipeline.

@@ -91,6 +91,11 @@ class VertexArray
 		void scale(GLfloat xyz);
 
 		/**
+		 * Change primitive mode.
+		 */
+		void setPrimitiveMode(GLuint pMode);
+
+		/**
 		 * Draw.
 		 */
 		void draw();

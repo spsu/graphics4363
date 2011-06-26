@@ -118,6 +118,10 @@ void setup()
 			"assets/nintendo/luigi.3ds",
 			"assets/nintendo/luigi_gr.bmp"
 		);
+	models["bowser"] = make_pair(
+			"assets/nintendo/bowser.3ds",
+			"assets/nintendo/bowser.bmp"
+		);
 	models["masksalesman"] = make_pair(
 			"assets/nintendo/masksalesman.3ds",
 			"assets/nintendo/HappyMas.bmp"
@@ -177,15 +181,15 @@ void setup()
 	// Skyboxes -- Don't load all of them! 
 	// Options: grimm, interstellar, vday
 	models["vbox"] = make_pair(
-			"assets/skyboxes/interstellar.3ds",
-			"assets/skyboxes/interstellar.png"
+			"assets/skyboxes/vday.3ds",
+			"assets/skyboxes/vday.png"
 		);
 
-	// Shape primitives
-	models["torus"] = make_pair(
-			"assets/torus.3ds",
-			"" // No texture
-		);
+	// Shape primitives -- no textures. 
+	models["torus"] = make_pair("assets/torus.3ds", "");
+	models["sphere"] = make_pair("assets/sphere.3ds", "");
+	models["grid"] = make_pair("assets/grid.3ds", "");
+	models["cone"] = make_pair("assets/cone.3ds", "");
 
 	pId = loadAndCompile(FRAGMENT_SHADER, VERTEX_SHADER);
 
@@ -229,6 +233,9 @@ void setup()
 		}
 	}
 
+	// Set render mode
+	V["grid"]->setPrimitiveMode(GL_LINES);
+
 	// Initial offset
 	TransformationStack* transformStack = TransformationStackRegistry::get();
 	transformStack->translate(0.0f, 0.0f, 0.0f);
@@ -266,7 +273,7 @@ void render(void)
 
 	// XXX: Lighting
 	GLfloat lightPos[] = { counter3, counter3, 100.0f };
-	GLfloat diffuseColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	GLfloat diffuseColor[] = { 0.2f, 0.05f, 0.05f, 1.0f };
 
 	glUniform3fv(lightLoc, 1, lightPos);
 	glUniform4fv(dcLoc, 1, diffuseColor);
@@ -358,6 +365,10 @@ void render(void)
 	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.3f);
 	V["linkA"]->translate(-847.0f, -170.0f, -5702.0f);
 
+	V["bowser"]->scale(20.0f + 0.1f*timerSlow*PI*2);
+	V["bowser"]->rotate(1.50f, PI, 0.0f);
+	V["bowser"]->translate(900.0f, -445.0f, 4100.0f);
+
 	// Lots of goombas.
 	// TODO: Goombas rotate when you get close.
 	V["goomba"]->scale(6.0);
@@ -385,6 +396,25 @@ void render(void)
 	V["torus"]->scale(300.0f);
 	drawTorusTower(4);
 
+	V["sphere"]->scale(120.0f);
+	V["sphere"]->translate(5900.0, -560.0, 7600);
+	V["sphere"]->draw();
+
+	// Draw grids.
+	V["grid"]->scale(200.0f);
+	V["grid"]->rotate(1.5f, 0.0f, 0.0f);
+	V["grid"]->translate(300.0f, -565.0f, -1500.0f);
+	V["grid"]->draw();
+	V["grid"]->scale(800.0f);
+	V["grid"]->translate(-2800.0f, -705.0f, -3300.0f);
+	V["grid"]->draw();
+	V["grid"]->scale(10.0f + 300 * timerSlow*2*PI);
+	V["grid"]->rotate(timerSlowImmediateReset*2*PI, 
+				timerSlowImmediateReset*2*PI, 
+				timerSlowImmediateReset*2*PI);
+	V["grid"]->translate(12400.0f, 900.0f, -3900.0f);
+	V["grid"]->draw();
+
 	// Skybox
 	V["vbox"]->rotate(1.50f, timerUltraSlowImmediateReset*2*PI, 0.0f);
 	V["vbox"]->translate(0.0f, 100.0f, 0.0f);
@@ -393,13 +423,14 @@ void render(void)
 
 	// Draw models.
 	//V["kokiri"]->draw();
-	V["dekutree"]->draw();
+	//V["dekutree"]->draw();
 	V["hyrule"]->draw();
 	V["whomp"]->draw();
 	V["moon"]->draw();
 	V["luigi"]->draw();
 	V["linkA"]->draw();
 	V["dodongo"]->draw();
+	V["bowser"]->draw();
 	V["masksalesman"]->draw();
 	V["treasure"]->draw();
 	V["hcastle"]->draw();
