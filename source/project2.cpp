@@ -115,44 +115,60 @@ void setup()
 {
 	// Characters
 	models["luigi"] = make_pair(
-			"assets/nintendo/luigi.3ds",
-			"assets/nintendo/luigi_gr.bmp"
+			"assets/nintendo/mario/luigi.3ds",
+			"assets/nintendo/mario/luigi_gr.bmp"
 		);
 	models["bowser"] = make_pair(
-			"assets/nintendo/bowser.3ds",
-			"assets/nintendo/bowser.bmp"
+			"assets/nintendo/mario/bowser.3ds",
+			"assets/nintendo/mario/bowser.bmp"
 		);
 	models["masksalesman"] = make_pair(
-			"assets/nintendo/masksalesman.3ds",
-			"assets/nintendo/HappyMas.bmp"
+			"assets/nintendo/zelda/masksalesman.3ds",
+			"assets/nintendo/zelda/HappyMas.bmp"
 		);
 	models["whomp"] = make_pair(
-			"assets/nintendo/whomp.3ds",
-			"assets/nintendo/Whomp_gr.bmp"
+			"assets/nintendo/mario/whomp.3ds",
+			"assets/nintendo/mario/Whomp_gr.bmp"
+		);
+	models["thwomp1"] = make_pair(
+			"assets/nintendo/mario/thwomp1.3ds",
+			"assets/nintendo/mario/thwomp1.bmp"
+		);
+	models["thwomp2"] = make_pair(
+			"assets/nintendo/mario/thwomp2.3ds",
+			"assets/nintendo/mario/thwomp2.bmp"
 		);
 	models["dodongo"] = make_pair(
-			"assets/nintendo/dodongo.3ds",
-			"assets/nintendo/dodongo.png"
+			"assets/nintendo/zelda/dodongo.3ds",
+			"assets/nintendo/zelda/dodongo.png"
 		);
 	models["linkA"] = make_pair(
-			"assets/nintendo/linkA.3ds",
-			"assets/nintendo/linkA.png"
+			"assets/nintendo/zelda/linkA.3ds",
+			"assets/nintendo/zelda/linkA.png"
+		);
+	models["linkY"] = make_pair(
+			"assets/nintendo/zelda/linkY.3ds",
+			"assets/nintendo/zelda/linkY.bmp"
+		);
+	models["heart"] = make_pair(
+			"assets/nintendo/zelda/heart.3ds",
+			"assets/nintendo/zelda/heart.bmp"
 		);
 	models["arwing"] = make_pair(
-			"assets/nintendo/arwing.3ds",
-			"assets/nintendo/arwing.png"
+			"assets/nintendo/zelda/arwing.3ds",
+			"assets/nintendo/zelda/arwing.png"
 		);
 	models["goomba"] = make_pair(
-			"assets/nintendo/goomba.3ds",
-			"assets/nintendo/goomba.png"
+			"assets/nintendo/mario/goomba.3ds",
+			"assets/nintendo/mario/goomba.png"
 		);
 	models["moon"] = make_pair(
-			"assets/nintendo/moon.3ds",
-			"assets/nintendo/moon.bmp"
+			"assets/nintendo/zelda/moon.3ds",
+			"assets/nintendo/zelda/moon.bmp"
 		);
 	models["treasure"] = make_pair(
-			"assets/nintendo/treasurechest.3ds",
-			"assets/nintendo/treasurechest.png"
+			"assets/nintendo/zelda/treasurechest.3ds",
+			"assets/nintendo/zelda/treasurechest.png"
 		);
 
 	// Levels
@@ -365,19 +381,40 @@ void render(void)
 	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.3f);
 	V["linkA"]->translate(-847.0f, -170.0f, -5702.0f);
 
+	V["heart"]->scale(15.0);
+	V["heart"]->rotate(1.50f, 0.2, 0.0f);
+	V["heart"]->translate(-4700.0, -150.0, 9100.0);
+
+	V["linkY"]->scale(4.0);
+	V["linkY"]->rotate(1.50f, -0.2, 0.0f);
+	V["linkY"]->translate(-4700.0, -285.0, 8600.0);
+
 	V["bowser"]->scale(20.0f + 0.1f*timerSlow*PI*2);
 	V["bowser"]->rotate(1.50f, PI, 0.0f);
 	V["bowser"]->translate(900.0f, -445.0f, 4100.0f);
 
+	V["thwomp1"]->scale(40.0f);
+	V["thwomp1"]->rotate(1.50f, PI, 0.0f);
+	V["thwomp1"]->translate(2000.0f, 
+			635.0f - 1000*timerFastSlowReset, 3800.0f);
+	
+	V["thwomp2"]->scale(40.0f);
+	V["thwomp2"]->rotate(1.50f, PI, 0.0f);
+	V["thwomp2"]->translate(-1100.0f,
+			-235.0f - 800*timerFastSlowReset, 3000.0f);
+
+
+
 	// Lots of goombas.
 	// TODO: Goombas rotate when you get close.
 	V["goomba"]->scale(6.0);
-	V["goomba"]->rotate(1.50f, 1.0f, (timerFast/4)*0.1f);
-	V["goomba"]->translate(438.0, -800.0, 3200.0);
+	V["goomba"]->rotate(1.50f, 1.5f*PI, (timerSlow/4)*0.32f); // Castle grass
+	V["goomba"]->translate(438.0, -765.0, 3200.0);
 	V["goomba"]->draw();
-	V["goomba"]->translate(-1185.0, -180.0, -3107.0); // Ranch
+	V["goomba"]->rotate(1.50f, 1.0f, (timerSlow/4)*0.32f); // Castle grass
+	V["goomba"]->translate(-1185.0, -170.0, -3107.0); // Ranch
 	V["goomba"]->draw();
-	V["goomba"]->rotate(1.50f, PI, (timerFast/4)*0.1f);
+	V["goomba"]->rotate(1.50f, 1.5*PI, (timerFast/4)*0.1f);
 	V["goomba"]->translate(864.0, -320.0, 6060.0); // Castle bridge
 	V["goomba"]->draw();
 	V["goomba"]->rotate(1.50f, timerSlowImmediateReset*2*PI, (timerFast/4)*0.1f);
@@ -426,9 +463,13 @@ void render(void)
 	//V["dekutree"]->draw();
 	V["hyrule"]->draw();
 	V["whomp"]->draw();
+	V["thwomp1"]->draw();
+	V["thwomp2"]->draw();
 	V["moon"]->draw();
 	V["luigi"]->draw();
 	V["linkA"]->draw();
+	V["linkY"]->draw();
+	V["heart"]->draw();
 	V["dodongo"]->draw();
 	V["bowser"]->draw();
 	V["masksalesman"]->draw();
