@@ -77,11 +77,18 @@ GLfloat timerSuperSlow = 0.0f;
 GLfloat timerFastImmediateReset = 0.0f;
 GLfloat timerSlowImmediateReset = 0.0f;
 GLfloat timerSuperSlowImmediateReset = 0.0f;
+GLfloat timerUltraSlowImmediateReset = 0.0f;
 GLfloat timerFastSlowReset = 0.0f;
 
 // Camera movement
 GLfloat camRotX = 0.0f;
 GLfloat camRotY = 0.0f;
+
+// For moving objects
+GLfloat objMoveX = 0.0f;
+GLfloat objMoveY = 0.0f;
+GLfloat objMoveZ = 0.0f;
+GLfloat objRotY = 0.0f;
 
 GLuint lightLoc(0);
 GLuint dcLoc(0);
@@ -107,13 +114,13 @@ map<string, VertexArray*> V;
 void setup()
 {
 	// Characters
-	models["masksalesman"] = make_pair(
-			"assets/nintendo/masksalesman.3ds",
-			"assets/nintendo/HappyMas.bmp"
-		);
 	models["luigi"] = make_pair(
 			"assets/nintendo/luigi.3ds",
 			"assets/nintendo/luigi_gr.bmp"
+		);
+	models["masksalesman"] = make_pair(
+			"assets/nintendo/masksalesman.3ds",
+			"assets/nintendo/HappyMas.bmp"
 		);
 	models["whomp"] = make_pair(
 			"assets/nintendo/whomp.3ds",
@@ -135,15 +142,28 @@ void setup()
 			"assets/nintendo/goomba.3ds",
 			"assets/nintendo/goomba.png"
 		);
+	models["moon"] = make_pair(
+			"assets/nintendo/moon.3ds",
+			"assets/nintendo/moon.bmp"
+		);
+	models["treasure"] = make_pair(
+			"assets/nintendo/treasurechest.3ds",
+			"assets/nintendo/treasurechest.png"
+		);
 
 	// Levels
 	models["hyrule"] = make_pair(
 			"assets/nintendo/levels/hyrule.3ds",
 			"assets/nintendo/levels/hyrule.png"
 		);
-	models["kokiri"] = make_pair(
+	// XXX: Kokiri is broken.
+	/*models["kokiri"] = make_pair(
 			"assets/nintendo/levels/kokiri.3ds",
 			"assets/nintendo/levels/kokiri.png"
+		);*/
+	models["dekutree"] = make_pair(
+			"assets/nintendo/levels/dekutree2.3ds",
+			"assets/nintendo/levels/dekutree.jpg"
 		);
 	models["hcastle"] = make_pair(
 			"assets/nintendo/levels/hyrulecastle.3ds",
@@ -154,24 +174,11 @@ void setup()
 			"assets/nintendo/levels/peachcastle.bmp"
 		);
 
-	// Skyboxes
-	/*models["lostvalley"] = make_pair(
-			"assets/skyboxes/lostvalley.3ds",
-			"assets/skyboxes/lostvalley.png"
-		);
-	models["grimm"] = make_pair(
-			"assets/skyboxes/zfight/grimm.3ds",
-			"assets/skyboxes/zfight/grimm.png"
-		);*/
-
-	/*models["interstellar"] = make_pair(
-			"assets/skyboxes/zfight/interstellar.3ds",
-			"assets/skyboxes/zfight/interstellar.png"
-		);*/
-
-	models["stormy"] = make_pair(
-			"assets/skyboxes/zfight/stormy.3ds",
-			"assets/skyboxes/zfight/stormy.png"
+	// Skyboxes -- Don't load all of them! 
+	// Options: grimm, interstellar, vday
+	models["vbox"] = make_pair(
+			"assets/skyboxes/interstellar.3ds",
+			"assets/skyboxes/interstellar.png"
 		);
 
 	// Shape primitives
@@ -303,9 +310,14 @@ void render(void)
 	//vao1->scale(0.7f, 0.3f, 0.5f);
 
 	// XXX: Levels
-	V["kokiri"]->scale(1000.0, 1000.0, 1000.0);
-	V["kokiri"]->rotate(1.50f, 0.7f, 0.0f);
-	V["kokiri"]->translate(4000.0f, -270.0f, -2000.0f);
+	//V["kokiri"]->scale(1000.0, 1000.0, 1000.0); // XXX: Kokiri is broken.
+	//V["kokiri"]->rotate(1.50f, 0.7f, 0.0f);
+	//V["kokiri"]->translate(4000.0f, -270.0f, -2000.0f);
+
+	V["dekutree"]->scale(5000.0f);
+	V["dekutree"]->rotate(1.50f, PI-0.8, 0.0f);
+	V["dekutree"]->rotate(1.50f, 3.40f, 0.0f);
+	V["dekutree"]->translate(-5200.0, 660.0, 0.0);
 
 	V["hyrule"]->scale(1000.0, 1000.0, 1000.0);
 	V["hyrule"]->rotate(1.50f, 0.0f, 0.0f);
@@ -327,17 +339,24 @@ void render(void)
 
 	V["luigi"]->scale(10.0f);
 	V["luigi"]->rotate(1.50f, 1.0f, (timerFast/4)*0.2f);
-	V["luigi"]->translate(1000.0f, -150.0f, -2000.0f);
+	V["luigi"]->translate(1000.0f, -220.0f, -2000.0f);
+	
+	V["masksalesman"]->scale(3.0f);
+	V["masksalesman"]->rotate(1.50f, 3/2*PI, (timerFast/4)*0.2f);
+	V["masksalesman"]->translate(-4700.0f, 
+							-470.0f + timerFast*PI*2*10, -2500.0f);
+
+	V["treasure"]->scale(15.0f);
+	V["treasure"]->rotate(1.50f, 0.0f, 0.0f);
+	V["treasure"]->translate(-4800.0f, -470.0f, -2800.0f);
 
 	V["dodongo"]->scale(10.7);
 	V["dodongo"]->rotate(1.50f, (timerSlow/4*0.7f), (timerFastSlowReset/4)*0.1f);
 	V["dodongo"]->translate(-1247.0f, -400.0f, -502.0f);
-	V["dodongo"]->draw();
 
 	V["linkA"]->scale(0.7);
 	V["linkA"]->rotate(1.50f, 1.0f, (timerFast/4)*0.3f);
 	V["linkA"]->translate(-847.0f, -170.0f, -5702.0f);
-	V["linkA"]->draw();
 
 	// Lots of goombas.
 	// TODO: Goombas rotate when you get close.
@@ -354,6 +373,10 @@ void render(void)
 	V["goomba"]->translate(1700.0, -170.0, -4458.0); // Zora's domain
 	V["goomba"]->draw();
 
+	V["moon"]->scale(3300.0);
+	V["moon"]->rotate(1.30f, 0.2f, 0.0f);
+	V["moon"]->translate(2000.0f, 14000.0f, -30000.0f);
+
 	// Arwings have a flight pattern. 
 	V["arwing"]->scale(7.0f);
 	drawArwing();
@@ -363,20 +386,28 @@ void render(void)
 	drawTorusTower(4);
 
 	// Skybox
-	V["stormy"]->rotate(1.50f, 0.0f, 0.0f);
-	V["stormy"]->translate(0.0f, 10000.0f, 0.0f);
-	V["stormy"]->scale(100000.0);
-	V["stormy"]->draw();
+	V["vbox"]->rotate(1.50f, timerUltraSlowImmediateReset*2*PI, 0.0f);
+	V["vbox"]->translate(0.0f, 100.0f, 0.0f);
+	V["vbox"]->scale(200000.0);
+	V["vbox"]->draw();
 
 	// Draw models.
-	V["kokiri"]->draw();
+	//V["kokiri"]->draw();
+	V["dekutree"]->draw();
 	V["hyrule"]->draw();
 	V["whomp"]->draw();
+	V["moon"]->draw();
 	V["luigi"]->draw();
+	V["linkA"]->draw();
+	V["dodongo"]->draw();
+	V["masksalesman"]->draw();
+	V["treasure"]->draw();
 	V["hcastle"]->draw();
 	V["peachcastle"]->draw();
 
-	printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
+	//printf("Translation: %f, %f, %f\n", xTrans, yTrans, zTrans);
+	printf("Object Position: %f, %f, %f [%f]\n", 
+			objMoveX, objMoveY, objMoveZ, objRotY);
 
 	transformStack->pop();
 	transformStack->pop();
@@ -460,7 +491,32 @@ void keypress(unsigned char key, int x, int y)
 		case 'i':
 			yTrans -= 20.0f;
 			break;
-			
+		// Move Object.
+		case 'z':
+			objMoveX += 100.0f;
+			break;
+		case 'x':
+			objMoveX -= 100.0f;
+			break;
+		case 'c':
+			objMoveZ -= 100.0f;
+			break;
+		case 'v':
+			objMoveZ += 100.0f;
+			break;
+		case 'b':
+			objMoveY += 10.0f;
+			break;
+		case 'n':
+			objMoveY -= 5.0f;
+			break;
+		case 'm':
+			objRotY += 0.1f;
+			break;
+		case ',':
+			objRotY -= 0.0f;
+			break;
+
 		// Reset position.
 		case 'p': 
 			yTrans = 0.0f;
@@ -512,6 +568,7 @@ void incrementTimers()
 	const float FAST = 0.1f;
 	const float SLOW = 0.01f;
 	const float SUPER_SLOW = 0.002f;
+	const float ULTRA_SLOW = 0.0001f;
 
 	static bool tFastD = true;
 	static bool tSlowD = true;
@@ -521,6 +578,7 @@ void incrementTimers()
 	timerFastImmediateReset += FAST;
 	timerSlowImmediateReset += SLOW;
 	timerSuperSlowImmediateReset += SUPER_SLOW;
+	timerUltraSlowImmediateReset += ULTRA_SLOW;
 	
 	if(timerFastImmediateReset >= 1.0f) {
 		timerFastImmediateReset = 0.0f;
@@ -532,6 +590,10 @@ void incrementTimers()
 
 	if(timerSuperSlowImmediateReset >= 1.0f) {
 		timerSuperSlowImmediateReset = 0.0f;
+	}
+
+	if(timerUltraSlowImmediateReset >= 1.0f) {
+		timerUltraSlowImmediateReset = 0.0f;
 	}
 
 	if(tFastD) {
