@@ -6,7 +6,11 @@ The code was written in a Unix environment. The code _probably_ compiles
 elsewhere, but don't take my word for it. At minimum, the Makefile will 
 require changes in order to build on other systems.
 
-I may begin using pthreads, which would make the project Unix only. 
+[Here is a video](http://www.youtube.com/watch?v=AL2ma3AMvTc) of
+project #2. 
+
+I may begin using pthreads to handle game controller input, which would 
+make the project Unix only. 
 
 Requirements
 ------------
@@ -29,7 +33,7 @@ Nintendo 64 videogames. Those assets are not included in this repository.
 Texture/environment mapping credits:
 
 * [Jockum Skoglund](http://www.quake3world.com/forum/viewtopic.php?t=9242)
-  for /assets/skyboxes/zfight/.\*.[png|jpg|bmp]
-* [Unknown]() for /assets/skyboxes/unknown/.\*.[png|jpg|bmp]
+  for /assets/skyboxes/.\*.[png|jpg|bmp]
 
-These files are also too large to keep here. I'll link to a tarfile.
+These files are also too large to keep here. I'll link to a tarfile soon.
+
