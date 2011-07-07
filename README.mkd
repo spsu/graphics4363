@@ -18,8 +18,9 @@ Screenshots & Video
 ![Project II - Dodongo](http://i.imgur.com/MQkNxm.jpg)
 ![Project II - Majora's Moon](http://i.imgur.com/MU9n8m.jpg)
 
-[Here is a video](http://www.youtube.com/watch?v=AL2ma3AMvTc) of
-project II. 
+* [Video of project II](http://www.youtube.com/watch?v=AL2ma3AMvTc).
+* [Gallery of screenshots](http://echelon.imgur.com/graphics_4363)
+  for each project.
 
 Requirements
 ------------
