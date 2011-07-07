@@ -9,6 +9,8 @@ require changes in order to build on other systems.
 [Here is a video](http://www.youtube.com/watch?v=AL2ma3AMvTc) of
 project #2. 
 
+![Project II](http://i.imgur.com/MU9n8m.jpg)
+
 I may begin using pthreads to handle game controller input, which would 
 make the project Unix only. 
 
