@@ -1,18 +1,25 @@
 Graphics I 
 ==========
+
 This constitutes project work from Graphics I.
 
 The code was written in a Unix environment. The code _probably_ compiles
 elsewhere, but don't take my word for it. At minimum, the Makefile will 
 require changes in order to build on other systems.
 
-[Here is a video](http://www.youtube.com/watch?v=AL2ma3AMvTc) of
-project #2. 
-
-![Project II](http://i.imgur.com/MU9n8m.jpg)
-
 I may begin using pthreads to handle game controller input, which would 
 make the project Unix only. 
+
+Screenshots & Video
+-------------------
+
+![Project I - Just triangles](http://i.imgur.com/PcnNnm.jpg)
+![Project II - Arwing](http://i.imgur.com/h4BEim.jpg)
+![Project II - Dodongo](http://i.imgur.com/MQkNxm.jpg)
+![Project II - Majora's Moon](http://i.imgur.com/MU9n8m.jpg)
+
+[Here is a video](http://www.youtube.com/watch?v=AL2ma3AMvTc) of
+project II. 
 
 Requirements
 ------------
@@ -21,6 +28,8 @@ Requirements
 
 To run, `make project1 && ./project1`, and `make two && ./two` and 
 so forth.
+
+(Project I may not compile anymore.)
 
 Credits / notes
 ---------------
