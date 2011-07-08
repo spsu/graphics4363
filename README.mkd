@@ -49,6 +49,8 @@ Texture/environment mapping credits:
 
 * [Jockum Skoglund](http://www.quake3world.com/forum/viewtopic.php?t=9242)
   for /assets/skyboxes/.\*.[png|jpg|bmp]
+* [Calvin J. Hamilton](http://solarviews.com/eng/index.htm) for the celestial
+  models.
 
 These files are also too large to keep here. I'll link to a tarfile soon.
 
