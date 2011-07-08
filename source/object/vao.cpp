@@ -291,7 +291,7 @@ void VertexArray::draw()
 
 	glBindVertexArray(vao);
 
-	glBindTexture(GL_TEXTURE_2D, textureId); // TODO TODO TODO TODO  TODO TODO  TODO TODO  TODO TODO  TODO TODO 
+	glBindTexture(GL_TEXTURE_2D, textureId);
 
 	GLuint r = glGetUniformLocation(Registry::getProgramId(), "mv");
 	//glUniformMatrix4fv(r, 1, GL_TRUE, mTransform);

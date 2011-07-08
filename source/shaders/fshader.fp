@@ -10,5 +10,6 @@ void main ()
 {
 	// XXX: What's the difference? 
 	//fColor = texture2D(texture, texCoord);
-	gl_FragColor = texture2D(texture, texCoord) + color;
+	gl_FragColor = texture2D(texture, texCoord) * 0.80 + color * 0.20;
+	//gl_FragColor = color;
 }

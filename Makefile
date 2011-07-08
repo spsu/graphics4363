@@ -24,7 +24,7 @@ all:
 
 .PHONY: clean
 clean: 
-	$(RM) main test project1 project2 two
+	$(RM) main test project1 project2 two solar
 	$(RM) *.o *.a *.so *.out
 	cd ./build && $(RM) *.o *.so
 	cd ./build && $(RM) */*.o */*.so */*/*.o */*/*.so
@@ -56,6 +56,7 @@ two: source/project2.cpp required
 	@$(CD) ./build && $(C) $(INC) -c ../source/project2.cpp
 	@echo "[link] linking ALL object files" 
 	@$(RM) build/project1.o
+	@$(RM) build/project3.o
 	@$(LN) $(LIB) build/*.o \
 		build/libs/*.o \
 		build/shaderlib/*.o \
@@ -65,6 +66,21 @@ two: source/project2.cpp required
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
 
+### PROJECT THREE ####################
+solar: source/project3.cpp required 
+	@echo "[compile] project three"
+	@$(CD) ./build && $(C) $(INC) -c ../source/project3.cpp
+	@echo "[link] linking ALL object files" 
+	@$(RM) build/project1.o
+	@$(RM) build/project2.o
+	@$(LN) $(LIB) build/*.o \
+		build/libs/*.o \
+		build/shaderlib/*.o \
+		build/object/*.o \
+		build/3rdparty/*.o \
+		build/loader/*.o -o solar 
+	@chmod +x solar 
+	@echo "\nBuild Success!\n"
 
 ### ALL LIBS ##########################
 required: \
