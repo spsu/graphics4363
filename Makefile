@@ -5,7 +5,7 @@
 
 C = g++ -O0 -g -Wall -fPIC 
 LN = g++ -O0 -g -lstdc++
-SHARED = g++ -shared -lstdc++
+SHARED = g++ -shared -lstdc++ -lGL -lglx
 CD = cd
 RM = /bin/rm -f
 INC = -I/usr/local/include -I/usr/include/GL
@@ -57,12 +57,12 @@ two: source/project2.cpp required
 	@echo "[link] linking ALL object files" 
 	@$(RM) build/project1.o
 	@$(RM) build/project3.o
-	@$(LN) $(LIB) build/*.o \
+	@$(LN) build/*.o \
 		build/libs/*.o \
 		build/shaderlib/*.o \
 		build/object/*.o \
 		build/3rdparty/*.o \
-		build/loader/*.o -o two 
+		build/loader/*.o $(LIB) -o two 
 	@chmod +x two 
 	@echo "\nBuild Success!\n"
 
